@@ -5,6 +5,8 @@ export default (sequelize, DataType) => {
       type: DataType.STRING,
       allowNull: false
     }
+  }, {
+    timestamps: false, 
   })
 
   return Category;

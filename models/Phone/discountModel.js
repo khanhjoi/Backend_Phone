@@ -1,5 +1,4 @@
 export default (sequelize, DataTypes) => {
-
   const Discount = sequelize.define("discount",{
     name_discount: {
       type: DataTypes.STRING,
@@ -17,6 +16,8 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.FLOAT,
       allowNull: false
     }
+  }, {
+    timestamps: false, 
   })
   return Discount;
 }

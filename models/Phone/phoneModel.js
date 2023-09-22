@@ -1,9 +1,8 @@
 export default (sequelize, DataTypes) => {
-
   const Phone = sequelize.define("phone",{
-    price: {
-      type: DataTypes.INTEGER,
-      allowNull: false
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     detail: {
       type: DataTypes.TEXT,
@@ -13,6 +12,8 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
     }
+  }, {
+    timestamps: false, 
   })
 
   return Phone;

@@ -1,13 +1,11 @@
 export default (sequelize, DataTypes) => {
-
-  const Brand = sequelize.define("brand",{
-    brand_name: {
+  const Color = sequelize.define("Color",{
+    nameColor: {
       type: DataTypes.STRING,
-      allowNull: false
-    }
+      allowNull: false,
+    },
   }, {
     timestamps: false, 
   })
-
-  return Brand;
+  return Color;
 }
