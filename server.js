@@ -17,8 +17,10 @@ app.use(express.urlencoded({ extended: true }));
 
 // router
 import productRouter from './routes/productRouter.js';
+import providerRouter from './routes/ProviderRouter.js';
 
 app.use('/api/v1/phone', productRouter);
+app.use('/api/v1/provider', providerRouter);
 
 app.get("/" , (req, res) => {
   res.json("hello from api");

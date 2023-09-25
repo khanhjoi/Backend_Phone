@@ -9,6 +9,10 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false
     },
+    providerId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
     colorId: {
       type: DataTypes.INTEGER,
       allowNull: false
@@ -18,7 +22,7 @@ export default (sequelize, DataTypes) => {
       allowNull: false
     },
     quantity: {
-      type: DataTypes.STRING,
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
   }, {
@@ -28,6 +32,7 @@ export default (sequelize, DataTypes) => {
     PhoneDetail.belongsTo(models.Phone, { foreignKey: 'phoneId', primaryKey: true });
     PhoneDetail.belongsTo(models.Capacity, { foreignKey: 'capacityId' });
     PhoneDetail.belongsTo(models.Color, { foreignKey: 'colorId' });
+    PhoneDetail.belongsTo(models.Provider, { foreignKey: 'providerId' });
   };
   return PhoneDetail;
 }
