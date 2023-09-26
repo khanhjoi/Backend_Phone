@@ -4,6 +4,10 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
+    additionalPrice: {
+      type: DataTypes.INTEGER,
+      default: 0
+    },
   }, {
     timestamps: false, 
   })

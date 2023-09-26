@@ -2,8 +2,8 @@ export default (sequelize, DataTypes) => {
   const User = sequelize.define("user",{
     userId: {
       type: DataTypes.INTEGER,
-      primaryKey: true,
-      allowNull: false
+      autoIncrement: true,
+      primaryKey: true
     },
     firstName: {
       type: DataTypes.STRING,
@@ -14,24 +14,23 @@ export default (sequelize, DataTypes) => {
       allowNull: false
     },
     email: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING,
       allowNull: false
     },
     phone: {
-      type: DataTypes.INTEGER(10),
+      type: DataTypes.INTEGER,
       allowNull: false
     },
     password: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING,
       allowNull: false
     },
     role: {
-      type: DataTypes.INTEGER,
-      allowNull: false
+      type: DataTypes.BOOLEAN,
+      default: false
     },
     token: {
-      type: DataTypes.INTEGER,
-      allowNull: false
+      type: DataTypes.STRING,
     },
   })
 
