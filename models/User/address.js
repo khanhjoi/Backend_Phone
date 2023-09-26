@@ -1,6 +1,6 @@
 export default (sequelize, DataTypes) => {
 
-  const User = sequelize.define("user",{
+  const Address = sequelize.define("address",{
     addressId: {
       type: DataTypes.INTEGER,
       primaryKey: true,
@@ -10,7 +10,9 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false
     },
+  }, {
+    timestamps: false, 
   })
 
-  return User;
+  return Address;
 }
