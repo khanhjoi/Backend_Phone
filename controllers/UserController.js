@@ -2,7 +2,6 @@ import { where } from "sequelize";
 import db from "../models/index.js";
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import e from "express";
 
 export const register = async (req, res) => {
   try {
@@ -30,7 +29,7 @@ export const register = async (req, res) => {
     })
     
     const token = jwt.sign(
-      {data: user.id, email},
+      {data: user.userId, email},
       process.env.TOKEN_KEY,
       {
         expiresIn: '2d'
@@ -89,7 +88,6 @@ export const createUser = async (req, res) => {
     return res.status(400).json(error)
   }
 }
-
 
 export const updateUser = async (req, res) => {
   try {

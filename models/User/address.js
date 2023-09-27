@@ -3,13 +3,24 @@ export default (sequelize, DataTypes) => {
   const Address = sequelize.define("address",{
     addressId: {
       type: DataTypes.INTEGER,
-      primaryKey: true,
-      allowNull: false
+      autoIncrement: true,
+      primaryKey: true
     },
-    nameAdd: {
+    commune: {
       type: DataTypes.STRING,
       allowNull: false
     },
+    wart: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    city: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    detail: {
+      type: DataTypes.STRING,
+    }
   }, {
     timestamps: false, 
   })
