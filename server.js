@@ -17,13 +17,13 @@ app.use(bodyParser.json());
 app.use(express.urlencoded({ limit: '50mb', extended: true}));
 
 // router
-import productRouter from './routes/productRouter.js';
+import phoneRouter from './routes/PhoneRouter.js';
 import providerRouter from './routes/ProviderRouter.js';
 import imageRouter from './routes/image.router.js';
 import userRouter from './routes/UserRouter.js'
 
-app.use('/api/v1/phone', productRouter);
-app.use('/api/v1/provider',auth, providerRouter);
+app.use('/api/v1/phone', phoneRouter);
+app.use('/api/v1/provider', auth, providerRouter);
 app.use('/api/v1/image', imageRouter);
 app.use('/api/v1/user', userRouter);
 

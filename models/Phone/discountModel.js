@@ -1,19 +1,19 @@
 export default (sequelize, DataTypes) => {
   const Discount = sequelize.define("discount",{
-    name_discount: {
+    nameDiscount: {
       type: DataTypes.STRING,
       allowNull: false
     },
-    date_begin: {
-      type: DataTypes.DATE,
+    dateBegin: {
+      type: DataTypes.DATEONLY,
       allowNull: false
     }, 
-    date_end: {
-      type: DataTypes.DATE,
+    dateEnd: {
+      type: DataTypes.DATEONLY,
       allowNull: false
     },
     percent: {
-      type: DataTypes.FLOAT,
+      type: DataTypes.INTEGER,
       allowNull: false
     }
   }, {

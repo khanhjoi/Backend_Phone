@@ -1,7 +1,6 @@
 export default (sequelize, DataTypes) => {
   const Cart = sequelize.define("cart",{
-
-    price: {
+    totalPrice: {
       type: DataTypes.INTEGER,
       allowNull: false
     },

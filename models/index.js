@@ -40,6 +40,7 @@ import phoneModel from './Phone/phoneModel.js';
 import categoryModel from './Phone/categoryModel.js';
 import brandModel from './Phone/brandModel.js';
 import discountModel from './Phone/discountModel.js';
+import discountDetail from './Phone/discountDetail.js';
 import colorModel from './Phone/colorModel.js';
 import capacityModel from './Phone/capacityModel.js';
 import detailImageModel from './Phone/detailImageModel.js';
@@ -47,13 +48,11 @@ db.phone = phoneModel(sequelize, DataTypes)
 db.category = categoryModel(sequelize, DataTypes)
 db.brand = brandModel(sequelize, DataTypes)
 db.discount = discountModel(sequelize, DataTypes)
+db.discountDetail = discountDetail(sequelize, DataTypes);
 db.color = colorModel(sequelize, DataTypes)
 db.capacity = capacityModel(sequelize, DataTypes)
 db.imageDetail = detailImageModel(sequelize, DataTypes)
 // define relationship with Phone Entity
-    db.phone.hasMany(db.discount)
-    db.discount.belongsTo(db.phone)
-    
     db.brand.hasMany(db.phone)
     db.phone.belongsTo(db.brand)
 
@@ -67,12 +66,14 @@ db.imageDetail = detailImageModel(sequelize, DataTypes)
     db.color.belongsTo(db.phone)
 
     db.color.hasMany(db.imageDetail)
-    db.imageDetail.belongsTo(db.color)
 
     db.phone.hasMany(db.imageDetail, {
       foreignKey: 'phoneId'
     });
     db.imageDetail.belongsTo(db.phone);
+
+    db.phone.belongsToMany(db.discount, { through: db.discountDetail });
+    db.discount.belongsToMany(db.phone, { through: db.discountDetail });
 
 // Provider
 import Provider from './Provide/Provider.js';
@@ -98,7 +99,7 @@ db.PurchaseDetail.hasMany(db.phone, {
 import User from './User/User.js';
 import Address from './User/Address.js';
 import Cart from './User/Cart.js';
-import DetailCart from './User/DetailCart.js'
+import CartDetail from './User/DetailCart.js'
 import Order from './User/Order.js';
 import Payment from './User/Payment.js';
 import State from './User/State.js';
@@ -109,7 +110,7 @@ db.cart = Cart(sequelize, DataTypes);
 db.order = Order(sequelize, DataTypes);
 db.payment = Payment(sequelize, DataTypes);
 db.state = State(sequelize, DataTypes);
-db.detailCart =  DetailCart(sequelize, DataTypes);
+db.cartDetail =  CartDetail(sequelize, DataTypes);
 
 // user -> address
 db.user.hasMany(db.address, {
@@ -140,8 +141,8 @@ db.state.hasMany(db.order, {
   foreignKey: "stateId"
 })
 
-db.cart.belongsToMany(db.phone, { through: db.detailCart })
-db.phone.belongsToMany(db.cart, { through: db.detailCart })
+db.cart.belongsToMany(db.phone, { through: db.cartDetail })
+db.phone.belongsToMany(db.cart, { through: db.cartDetail })
 
 
 db.sequelize.sync({ force: false})
