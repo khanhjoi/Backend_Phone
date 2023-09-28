@@ -6,11 +6,11 @@ import auth from '../middleware/auth.js'
 const router = express.Router();
 
 // set discount for phone 
+router.get('/discount/:idPhone', auth ,discountController.getPhoneDiscount);
+router.put('/discount/:id', auth ,discountController.updateDiscount);
+router.delete('/discount/:id', auth ,discountController.deleteDiscount);
 router.get('/discount', auth ,discountController.getAllDiscount);
 router.post('/discount', auth ,discountController.addDiscount);
-router.put('/discount', auth ,discountController.updateDiscount);
-router.get('/discount/:idPhone', auth ,discountController.getPhoneDiscount);
-router.delete('/discount:id', auth ,discountController.deleteDiscount);
 
 
 // phone router
