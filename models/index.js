@@ -2,8 +2,6 @@ import dbConfig from '../config/dbConfig.js';
 
 import { Sequelize, DataTypes } from 'sequelize';
 
-
-
 const sequelize = new Sequelize(
   dbConfig.DB,
   dbConfig.USER,
@@ -37,63 +35,44 @@ db.sequelize = sequelize
 
 // Phone
 import phoneModel from './Phone/phoneModel.js';
+import phoneDetail from './Phone/phoneDetail.js';
 import categoryModel from './Phone/categoryModel.js';
 import brandModel from './Phone/brandModel.js';
 import discountModel from './Phone/discountModel.js';
-import discountDetail from './Phone/discountDetail.js';
 import colorModel from './Phone/colorModel.js';
 import capacityModel from './Phone/capacityModel.js';
-import detailImageModel from './Phone/detailImageModel.js';
 db.phone = phoneModel(sequelize, DataTypes)
 db.category = categoryModel(sequelize, DataTypes)
 db.brand = brandModel(sequelize, DataTypes)
 db.discount = discountModel(sequelize, DataTypes)
-db.discountDetail = discountDetail(sequelize, DataTypes);
 db.color = colorModel(sequelize, DataTypes)
 db.capacity = capacityModel(sequelize, DataTypes)
-db.imageDetail = detailImageModel(sequelize, DataTypes)
+db.phoneDetail = phoneDetail(sequelize, DataTypes)
 // define relationship with Phone Entity
-    db.brand.hasMany(db.phone)
-    db.phone.belongsTo(db.brand)
+  db.brand.hasMany(db.phone)
+  db.phone.belongsTo(db.brand);
 
-    db.category.hasMany(db.phone)
-    db.phone.belongsTo(db.category)
+  db.category.hasMany(db.phone)
+  db.phone.belongsTo(db.category);
 
-    db.phone.hasMany(db.capacity)
-    db.capacity.belongsTo(db.phone)
+  db.discount.hasMany(db.phone);
+  db.phone.belongsTo(db.discount);
 
-    db.phone.hasMany(db.color)
-    db.color.belongsTo(db.phone)
+  db.color.hasOne(db.phoneDetail, { foreignKey: 'colorId', primaryKey: true, allowNull: false });
+  db.phoneDetail.belongsTo(db.color, { foreignKey: 'colorId' });
 
-    db.color.hasMany(db.imageDetail)
+  db.capacity.hasOne(db.phoneDetail, { foreignKey: 'capacityId', primaryKey: true, allowNull: false  });
+  db.phoneDetail.belongsTo(db.capacity, { foreignKey: 'capacityId' });
 
-    db.phone.hasMany(db.imageDetail, {
-      foreignKey: 'phoneId'
-    });
-    db.imageDetail.belongsTo(db.phone);
-
-    db.phone.belongsToMany(db.discount, { through: db.discountDetail });
-    db.discount.belongsToMany(db.phone, { through: db.discountDetail });
+  db.phone.hasOne(db.phoneDetail, { foreignKey: 'phoneId', primaryKey: true, allowNull: false  });
+  db.phoneDetail.belongsTo(db.phone, { foreignKey: 'phoneId' });
 
 // Provider
-import Provider from './Provide/Provider.js';
 import PurchaseDetail from './Provide/PurchaseDetail.js';
 import PurchaseOrder from './Provide/PurchaseOrder.js';
-db.provider = Provider(sequelize, DataTypes);
 db.purchaseOrder = PurchaseOrder(sequelize, DataTypes);
 db.PurchaseDetail = PurchaseDetail(sequelize, DataTypes);
 // --------- define relationship ------
-db.provider.hasMany(db.purchaseOrder,{
-  foreignKey: 'providerId'
-})
-
-db.purchaseOrder.belongsTo(db.provider,{
-  foreignKey: 'providerId'
-})
-
-db.PurchaseDetail.hasMany(db.phone, {
-  foreignKey: 'purchaseDetailId'
-})
 
 // USER DEFINE 
 import User from './User/User.js';
@@ -133,12 +112,13 @@ db.user.hasMany(db.order, {
 });
 
 // order -> payment
-db.payment.hasMany(db.order, {
-  foreignKey: "paymentId"
+db.order.hasMany(db.payment, {
+  foreignKey: "OrderIdId"
 })
+
 // order -> state
-db.state.hasMany(db.order, {
-  foreignKey: "stateId"
+db.order.hasMany(db.state, {
+  foreignKey: "OrderIdId"
 })
 
 db.cart.belongsToMany(db.phone, { through: db.cartDetail })

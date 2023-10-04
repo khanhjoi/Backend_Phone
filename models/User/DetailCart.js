@@ -3,20 +3,9 @@ export default (sequelize, DataTypes) => {
     quantity: {
       type: DataTypes.INTEGER,
       allowNull: false
-    },
-    colorId: {
-      type: DataTypes.INTEGER,
-      allowNull: false
-    },
-    capacityId: {
-      type: DataTypes.INTEGER,
-      allowNull: false
-    },
-    discountId: {
-      type: DataTypes.INTEGER,
-    },
+    }
   }, {
     timestamps: false, 
-  })
+  });
   return CartDetail;
 }

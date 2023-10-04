@@ -59,10 +59,15 @@ const createPhone = async (req, res) => {
 const getAllPhone = async (req, res) => {
   const phones = await db.phone.findAll({
     include: [
-      { model: db.capacity },
-      { model: db.color }
-    ]
+      {
+        model: db.brand,
+      },
+      {
+        model: db.category,
+      },
+    ],
   });
+
 
   if(phones === null) {
     return res.status(504).json({ message: "No Phone in store"});

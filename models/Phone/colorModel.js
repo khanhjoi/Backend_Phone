@@ -1,5 +1,5 @@
 export default (sequelize, DataTypes) => {
-  const Color = sequelize.define("Color",{
+  const Color = sequelize.define("color",{
     nameColor: {
       type: DataTypes.STRING,
       allowNull: false,

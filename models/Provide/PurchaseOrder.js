@@ -5,6 +5,14 @@ export default (sequelize, DataType) => {
       type: DataType.STRING,
       allowNull: false
     },
+    providerName: {
+      type: DataType.STRING,
+      allowNull: false
+    },
+    providerLocation: {
+      type: DataType.STRING,
+      allowNull: false
+    },
     totalPrice: {
       type: DataType.INTEGER,
       allowNull: false

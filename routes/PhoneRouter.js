@@ -12,7 +12,6 @@ router.delete('/discount/:id', auth ,discountController.deleteDiscount);
 router.get('/discount', auth ,discountController.getAllDiscount);
 router.post('/discount', auth ,discountController.addDiscount);
 
-
 // phone router
 router.get('/', phoneController.getAllPhone);
 router.get('/:id', phoneController.getPhone);
