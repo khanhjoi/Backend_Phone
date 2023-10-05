@@ -13,7 +13,7 @@ export default (sequelize, DataTypes) => {
       allowNull: false,
     },
     price: {
-      type: DataTypes.FLOAT,
+      type: DataTypes.INTEGER,
       allowNull: false
     }
   }, {

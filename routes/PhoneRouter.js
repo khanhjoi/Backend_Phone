@@ -3,7 +3,16 @@ import phoneController from '../controllers/phoneController.js';
 import discountController from '../controllers/discountController.js';
 import auth from '../middleware/auth.js'
 
+import { addComment, updateComment, deleteComment } from '../controllers/commentController.js';
+
+
 const router = express.Router();
+
+// comment of user
+router.post('/:id/comment', auth , addComment);
+router.put('/:id/comment/:rateId', auth, updateComment);
+router.delete('/:id/comment/:rateId', auth, deleteComment);
+
 
 // set discount for phone 
 router.get('/discount/:idPhone', auth ,discountController.getPhoneDiscount);

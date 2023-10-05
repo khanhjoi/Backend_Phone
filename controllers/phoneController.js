@@ -1,4 +1,5 @@
 import db from "../models/index.js";
+import { Op } from "sequelize";
 
 const createPhone = async (req, res) => {
   try {
@@ -57,29 +58,55 @@ const createPhone = async (req, res) => {
 };
 
 const getAllPhone = async (req, res) => {
-  const phones = await db.phone.findAll({
+  const { brand, category, priceLow, priceUp } = req.query;
+  let phones = null;
+  phones = await db.phone.findAll({
+    where: {
+      price: {
+        [Op.gt]: Number(priceLow)|| 0,
+        [Op.lt]: Number(priceUp) || Number.MAX_VALUE
+      }
+    },
     include: [
       {
         model: db.brand,
+        where: brand ? { brand_name: brand } : {},
       },
       {
         model: db.category,
+        where: category ? { category_name: category } : {},
       },
     ],
   });
 
-
-  if(phones === null) {
-    return res.status(504).json({ message: "No Phone in store"});
+  if (phones.length === 0) {
+    return res.status(200).json({ message: "No Phone in store" });
   }
 
   return res.status(200).json(phones);
-
 };
 
 const getPhone = async (req, res) => {
   const id = req.params.id;
-  const phone = await db.phone.findByPk(id);
+  const phone = await db.phone.findAll({
+    where: {
+      id: id
+    },
+    include: [
+      {
+        model: db.phoneDetail,
+        include:[
+          {
+            model: db.color,
+          },
+          {
+            model: db.capacity,
+          }
+        ]
+      }
+    ]
+  });
+  
   if(phone === null) {
     return res.status(400).json({ message: "can't find phone"});
   }

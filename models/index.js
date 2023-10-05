@@ -72,6 +72,11 @@ import PurchaseDetail from './Provide/PurchaseDetail.js';
 import PurchaseOrder from './Provide/PurchaseOrder.js';
 db.purchaseOrder = PurchaseOrder(sequelize, DataTypes);
 db.PurchaseDetail = PurchaseDetail(sequelize, DataTypes);
+
+db.purchaseOrder.hasOne(db.PurchaseDetail, { foreignKey: 'purchaseOrderId', allowNull: false });
+db.PurchaseDetail.belongsTo(db.purchaseOrder);
+db.phone.hasOne(db.PurchaseDetail, { foreignKey: 'phoneId', allowNull: false });
+db.PurchaseDetail.belongsTo(db.phone);
 // --------- define relationship ------
 
 // USER DEFINE 
@@ -82,6 +87,7 @@ import CartDetail from './User/DetailCart.js'
 import Order from './User/Order.js';
 import Payment from './User/Payment.js';
 import State from './User/State.js';
+import Rate from './User/rate.js';
 
 db.user = User(sequelize, DataTypes);
 db.address = Address(sequelize, DataTypes);
@@ -90,39 +96,53 @@ db.order = Order(sequelize, DataTypes);
 db.payment = Payment(sequelize, DataTypes);
 db.state = State(sequelize, DataTypes);
 db.cartDetail =  CartDetail(sequelize, DataTypes);
+db.rate = Rate(sequelize, DataTypes);
 
 // user -> address
 db.user.hasMany(db.address, {
   foreignKey: 'userId'
 });
+db.address.belongsTo(db.user)
 
 // user -> cart
 db.user.hasOne(db.cart, {
   foreignKey: "userId"
 });
+db.cart.belongsTo(db.user)
 
 // cart -> order
 db.cart.hasMany(db.order, {
   foreignKey: "cartId"
 })
+db.order.belongsTo(db.cart);
 
 // user -> order
 db.user.hasMany(db.order, {
   foreignKey: 'userId',
 });
+db.order.belongsTo(db.user)
 
 // order -> payment
-db.order.hasMany(db.payment, {
+db.payment.hasMany(db.order, {
   foreignKey: "OrderIdId"
 })
+db.order.belongsTo(db.payment)
 
 // order -> state
-db.order.hasMany(db.state, {
+db.state.hasMany(db.order, {
   foreignKey: "OrderIdId"
 })
+db.order.belongsTo(db.state)
 
 db.cart.belongsToMany(db.phone, { through: db.cartDetail })
 db.phone.belongsToMany(db.cart, { through: db.cartDetail })
+
+// rate USEr
+db.user.hasMany(db.rate);
+db.rate.belongsTo(db.user);
+
+db.phone.hasMany(db.rate)
+db.rate.belongsTo(db.phone)
 
 
 db.sequelize.sync({ force: false})

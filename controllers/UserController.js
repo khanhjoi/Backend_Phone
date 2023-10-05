@@ -29,7 +29,10 @@ export const register = async (req, res) => {
     })
     
     const token = jwt.sign(
-      {data: user.userId, email},
+      {data: {
+        userId: user.userId, 
+        email: email
+      }},
       process.env.TOKEN_KEY,
       {
         expiresIn: '2d'

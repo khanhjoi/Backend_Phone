@@ -5,7 +5,8 @@ const createOrder = async (req, res) => {
   try {
     const { providerName, providerLocation, purchaseName, totalPrice, phone, mainImage } = req.body;
 
-    const user = await db.user.findOne({ where : {email: req.user.email}});
+    console.log(req.user)
+    const user = await db.user.findOne({ where : {email: req.user.data.email}});
     
     if(!user) {
       return res.status(403).json({ message: "Người dùng không tồn tại"});
@@ -113,7 +114,7 @@ const createOrder = async (req, res) => {
           }
         }
       }
-      return res.status(200).json(phoneDetail);
+      return res.status(200).json({message: "nhập hàng thành công"});
     }
   } catch (error) {
     return res.status(400).json(error);

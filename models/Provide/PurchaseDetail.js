@@ -17,17 +17,7 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true,
-    },
-    purchaseOrderId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      primaryKey: true,
-    },
-    phoneId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      primaryKey: true,
-    },
+    }
   }, {
     timestamps: false,
   });
@@ -35,8 +25,6 @@ export default (sequelize, DataTypes) => {
   PurchaseDetail.associate = (models) => {
     PurchaseDetail.belongsTo(models.color, { foreignKey: 'colorId' });
     PurchaseDetail.belongsTo(models.capacity, { foreignKey: 'capacityId' });
-    PurchaseDetail.belongsTo(models.purchaseDetail, { foreignKey: 'purchaseDetailId' });
-    PurchaseDetail.belongsTo(models.phone, { foreignKey: 'phoneId' });
     // Add associations to other models if required
   };
   return PurchaseDetail;
