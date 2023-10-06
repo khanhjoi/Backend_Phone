@@ -88,30 +88,43 @@ const getAllPhone = async (req, res) => {
 
 const getPhone = async (req, res) => {
   const id = req.params.id;
-  const phone = await db.phone.findAll({
+  const phoneDetail = await db.phone.findAll({
     where: {
       id: id
     },
     include: [
       {
         model: db.phoneDetail,
-        include:[
+        include: [
           {
-            model: db.color,
+            model: db.color
           },
           {
-            model: db.capacity,
+            model: db.capacity
           }
         ]
       }
+    ],
+    attributes: {
+      exclude: ['id', 'name', 'detail', 'mainImage', 'price', 'brandId', 'categoryId', 'discountId'] // Add any fields you want to exclude here
+    }
+  });
+
+  const phone = await db.phone.findAll({
+    where: {
+      id: id
+    },
+    include: [
+      {
+        model: db.rate,
+      }
     ]
   });
-  
   if(phone === null) {
     return res.status(400).json({ message: "can't find phone"});
   }
 
-  return res.status(200).json(phone);
+  return res.status(200).json({phone, phoneDetail});
 }
 
 export default { createPhone, getAllPhone, getPhone};

@@ -1,11 +1,10 @@
-import { where } from "sequelize";
 import db from "../models/index.js";
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
 export const register = async (req, res) => {
   try {
-    const { firstName, lastName, email, phone, password, role } = req.body;
+    const { firstName, lastName, email, phone, password, gender ,role } = req.body;
     // check input
     if(!(firstName && lastName && email, phone, password)) {
       return res.status(400).json({ message: "Vui lòng nhập đủ dữ liệu!!!"})
@@ -24,15 +23,17 @@ export const register = async (req, res) => {
       lastName,
       email,
       phone,
+      gender,
       role: role || false,
       password:encryptedPassword
     })
-    
+
     const token = jwt.sign(
-      {data: {
-        userId: user.userId, 
+      {
+        data: { userId: user.id, 
         email: email
-      }},
+      }
+     },
       process.env.TOKEN_KEY,
       {
         expiresIn: '2d'
@@ -60,11 +61,14 @@ export const login = async (req, res) => {
 
     const user = await db.user.findOne({ where: { email: email }});
 
-    console.log();
-
     if(user && (bcrypt.compareSync(password, user.password) )) {
       const token = jwt.sign(
-        {data: user.id, email},
+        {
+          data: { 
+            userId: user.id, 
+            email: email
+          }
+       },
         process.env.TOKEN_KEY,
         {
           expiresIn: '2d'
@@ -154,7 +158,7 @@ export const getAllUser = async (req, res) => {
 export const getUser = async (req, res) => {
   try {
     
-    const user = await db.user.findByPk(req.params.id);
+    const user = await db.user.findByPk(req.user.data.userId);
 
     if(!user) {
       return res.status(400).json({message : "Không thể tìm thấy người dùng này !!!"})

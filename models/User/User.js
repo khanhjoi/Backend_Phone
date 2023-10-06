@@ -1,10 +1,5 @@
 export default (sequelize, DataTypes) => {
   const User = sequelize.define("user",{
-    userId: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true
-    },
     firstName: {
       type: DataTypes.STRING,
       allowNull: false
@@ -28,6 +23,10 @@ export default (sequelize, DataTypes) => {
     role: {
       type: DataTypes.BOOLEAN,
       default: false
+    },
+    gender: {
+      type: DataTypes.STRING,
+      allowNull: false
     },
     token: {
       type: DataTypes.STRING,

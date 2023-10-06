@@ -50,8 +50,11 @@ const addDiscount = async (req, res) => {
         dateEnd: dateE
       }
     });  
+    console.log('ok')
 
     if(!discount) {
+      console.log('2')
+      
       // check phone exit in discount -> if not
       discount = await db.discount.create({
         nameDiscount,
@@ -59,33 +62,23 @@ const addDiscount = async (req, res) => {
         dateEnd: dateE,
         percent,
       });
+      
+      for (const phone of listPhone) {
 
-      const discountDetails = listPhone.map(phone => ({
-        discountId: discount.id,
-        phoneId: phone.phoneId
-      }));
+        const phoneModel = await db.phone.findByPk(phone.phoneId);
+        
+        if(!phoneModel){
+          return res.status(400).json({message : "có lỗi xảy ra"})
+        }
 
-      await db.discountDetail.bulkCreate(discountDetails);
+        phoneModel.discountId = discount.id;
+
+        await phoneModel.save();
+      }
 
     } else {
       // check phone exit in discount -> if yes
-      for (const phone of listPhone) {
-        const existingDiscountDetail = await db.discountDetail.findOne({
-          where: {
-            discountId: discount.id,
-            phoneId: phone.phoneId
-          }
-        });
-
-        if (existingDiscountDetail) {
-          continue;
-        } else {
-          await db.discountDetail.create({
-            discountId: discount.id,
-            phoneId: phone.phoneId,
-          })
-        } 
-      }
+      return res.status(200).json({message : 'giảm giá đã tồn tại'})
     }
 
     return res.status(200).json({message: "Thêm giảm giá thành công !!!"});

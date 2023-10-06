@@ -3,104 +3,103 @@ import db from "../models/index.js";
 
 export const getCart = async (req, res) => {
   try {
-    const user = await db.user.findOne({
-      where: { email: req.user.email },
-      include: [{ model: db.cart }],
+    const userId = req.user.data.userId; // Assuming you have the user ID from the request
+    // Find the user with the specified ID and include the associated phones
+    const cart = await db.cart.findAll({
+      where: {
+        userId: userId,
+      },
+      include: [
+        {
+          model: db.phone
+          ,
+          attributes: {
+            exclude: ['brandId', 'categoryId', 'detail'] // Add any fields you want to exclude here
+          }
+        }
+      ],
+      attributes: {
+        exclude: ['userId', 'phoneId'] // Add any fields you want to exclude here
+      }
     });
 
-    const cartDetail = await db.cart.findByPk(user.cart.id,
-      {include: [{ model: db.phone }]}
-    )
-
-    return res.status(200).json(cartDetail);
+    return res.status(200).json(cart);
   } catch (error) {
     return res.status(400).json(error);
   }
-}
+};
 
 export const addItemToCart = async (req, res) => {
   try { 
-
-    const { phoneId, quantity, capacityId, colorId } = req.body
-
-    const user = await db.user.findOne({
+    const { phoneId, quantity, capacityId, colorId, colorName, capacityName } = req.body
+    const userId = req.user.data.userId; // Assuming you have the user ID from the request
+    // Find the user with the specified ID and include the associated phones
+    const count = await db.cart.count({
       where: {
-        email: req.user.email
-      }
-    })
+        userId: userId,
+      },
+    });
 
-    let cart = await db.cart.findOne({
-      where: {userId: user.userId}
-    })
-
-    if(!cart){
-      cart = await db.cart.create({
-        userId: user.userId,
-        totalPrice: 0,
-      })
-    }
     
-    // check cart exit or not
-    let cartDetail = await db.cartDetail.findOne({
-      where: {cartId: cart.id}
-    })
+    if(count > 0) {
+      const cart = await db.cart.findAll({
+        where:{
+          userId: userId
+        }
+      })
+      
+      let checkExit = false;
 
-    const customIdPhone =  phoneId.toString() + capacityId + colorId;
-    console.log(typeof customIdPhone);
-    // if(!cartDetail){
-    //   // cart not exit -> create it 
-    //   cartDetail = await db.cartDetail.create({
-    //     phoneId: phoneId,
-    //     cartId: cart.id,
-    //     quantity: quantity,
-    //     colorId,
-    //     capacityId
-    //   })
-    //   //  Then calculate a total price
-    //   const tolPrice = await calculateTotalPrice(cart.id);
-    //   cart.totalPrice = tolPrice;
-    //   await cart.save();
+      for (let phone of cart) {
+        if(phoneId === phone.phoneId && capacityId === phone.capacityId && colorId === phone.colorId && userId === phone.userId) {
+          const cartUpdate = await db.cart.findOne({
+            where:{
+              phoneId: phone.phoneId,
+              capacityId: phone.capacityId,
+              colorId: phone.colorId
+            }
+          });
+          cartUpdate.quantity += quantity;
+          checkExit = true;
+          await cartUpdate.save();
+        }else {
+          continue;
+        }
+      }
 
-    //   return res.status(200).json({message : "Đã thêm sản phẩm thành công"});
-    // } else {
-    //   // cart exit -> check phone in cartDetail
-    //   const phoneExit = await db.cartDetail.findOne({
-    //     where : {
-    //       phoneId: phoneId,
-    //       capacityId: capacityId,
-    //       colorId: colorId
-    //     }
-    //   })
+      if(!checkExit) {
+        const cart = await db.cart.create({
+          userId, 
+          phoneId,
+          capacityId,
+          colorId,
+          colorName,
+          capacityName,
+          quantity
+        })
+      }
 
-    //   if(!phoneExit) {
-    //     // if phone not exit in cart -> create 
-    //     await db.cartDetail.create({
-    //       phoneId: phoneId,
-    //       cartId: cart.id,
-    //       quantity: quantity,
-    //       colorId,
-    //       capacityId
-    //     })
+      return res.status(200).json({message: "thêm sản phẩm thành công"});
+    }else {
+      // user init cart
+  
+      const phone = await db.phone.findByPk(phoneId)
+      console.log("okoko")
 
-    //     //  Then calculate a total price
-    //     const tolPrice = await calculateTotalPrice(cart.id);
-    //     cart.totalPrice = tolPrice;
-    //     await cart.save();
-    //     return res.status(200).json({ message: "Sản phẩm mới đã được thêm vào giỏ hàng!!!"})
-    //   } else {
-    //     // if phone exit -> plus one to quantity
-    //     phoneExit.quantity += quantity;
-    //     await phoneExit.save();
-
-    //     //  Then calculate a total price
-    //     const tolPrice = await calculateTotalPrice(cart.id);
-    //     cart.totalPrice = tolPrice;
-    //     await cart.save();
-
-    //     return res.status(200).json({ message: `Đã thêm cộng thêm ${quantity} sản phẩm vào giỏ hàng!!!`})
-    //   }
-    // } 
-    return res.status(200).json(customIdPhone);
+      if(!phone) {
+        return res.status(400).json({message : "có lỗi xảy ra"})
+      }
+      const cart = await db.cart.create({
+        userId, 
+        phoneId,
+        capacityId,
+        colorId,
+        colorName,
+        capacityName,
+        quantity
+      })
+      return res.status(200).json({cart});
+    }
   } catch (error) {
     return res.status(400).json(error);
   }
@@ -108,7 +107,28 @@ export const addItemToCart = async (req, res) => {
 
 export const updateItemToCart = async (req, res) => {
   try {
+    const { phoneId, quantity, capacityId, colorId} = req.body
     
+    if(!(phoneId && capacityId && colorId && quantity)) {
+      return res.status(400).json({message : "Có lỗi xảy ra"});
+    }
+
+    const cart = await db.cart.findOne({
+      where: {
+        phoneId,
+        capacityId,
+        colorId
+      }
+    })
+
+    if(!cart) {
+      return res.status(400).json({message : "Có lỗi xảy ra"});
+    }
+
+    cart.quantity = quantity;
+    await cart.save();
+    
+    return res.status(200).json(cart)
   } catch (error) {
     return res.status(400).json(error);
   }
@@ -116,16 +136,35 @@ export const updateItemToCart = async (req, res) => {
 
 export const removeItemToCart = async (req, res) => {
   try {
+    const { phoneId, capacityId, colorId} = req.body
     
+    if(!(phoneId && capacityId && colorId)) {
+      return res.status(400).json({message : "Có lỗi xảy ra"});
+    }
+
+    const cart = await db.cart.findOne({
+      where: {
+        phoneId,
+        capacityId,
+        colorId
+      }
+    })
+
+    if(!cart) {
+      return res.status(400).json({message : "Có lỗi xảy ra"});
+    }
+
+    await cart.destroy();
+
+    return res.status(200).json({message : "Xóa sản phẩm thành công"})
   } catch (error) {
-    return res.status(400).json(error);
+    console.log(error)
   }
 }
-// calculate price in cart
 
+// calculate price in cart
 const calculateTotalPrice = async (cartId) => {
   try {
-    console.log("ok")
     const cart = await db.cart.findAll({
       include: [
         {
@@ -143,21 +182,23 @@ const calculateTotalPrice = async (cartId) => {
       ]
     });
 
+    console.log(cart)
+  
     let totalPrice = 0;
 
-    for (const phone of cart[0].phones) {
-      const { price, cartDetail, discounts } = phone;
-      let phoneTotalPrice = price * cartDetail.quantity;
+    // for (const phone of cart[0].phones) {
+    //   const { price, cartDetail, discounts } = phone;
+    //   let phoneTotalPrice = price * cartDetail.quantity;
 
-      for(const discount of discounts) {
-        const { percent } = discount;
-        const discountAmount = phoneTotalPrice * (percent/100);
-        phoneTotalPrice -= discountAmount;
-      }
+    //   for(const discount of discounts) {
+    //     const { percent } = discount;
+    //     const discountAmount = phoneTotalPrice * (percent/100);
+    //     phoneTotalPrice -= discountAmount;
+    //   }
 
-      totalPrice += phoneTotalPrice;
-    }
-    return Number(totalPrice.toFixed(4));
+    //   totalPrice += phoneTotalPrice;
+    // }
+    // return Number(totalPrice.toFixed(4));
   } catch (error) {
     // Handle the error appropriately
     console.error(error);

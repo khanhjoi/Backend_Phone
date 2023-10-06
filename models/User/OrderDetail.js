@@ -1,6 +1,6 @@
 export default (sequelize, DataTypes) => {
-  const Cart = sequelize.define("cart",{
-    userId: {
+  const OrderDetail = sequelize.define("orderDetail",{
+    orderId: {
       type: DataTypes.INTEGER,
       primaryKey: true,
     },
@@ -12,13 +12,13 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       primaryKey: true,
     },
-    colorName: {
-      type: DataTypes.STRING,
-      default: 0
-    },
     capacityId: {
       type: DataTypes.INTEGER,
       primaryKey: true,
+    },
+    colorName: {
+      type: DataTypes.STRING,
+      default: 0
     },
     capacityName: {
       type: DataTypes.STRING,
@@ -28,10 +28,8 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       default: 0
     }
-  }, {
+  },{
     timestamps: false, 
   })
-
-  
-  return Cart;
+  return OrderDetail;
 }

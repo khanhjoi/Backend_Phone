@@ -4,7 +4,7 @@ import db from "../models/index.js";
 const createOrder = async (req, res) => {
   try {
     const { providerName, providerLocation, purchaseName, totalPrice, phone, mainImage } = req.body;
-
+    
     console.log(req.user)
     const user = await db.user.findOne({ where : {email: req.user.data.email}});
     
@@ -15,7 +15,7 @@ const createOrder = async (req, res) => {
     if(!user.role) {
       return res.status(403).json({ message: "Người dùng không thể thực hiện chức năng này"});
     }
-
+    console.log('ok')
     // Create the purchase order
     const purchaseOrder = await db.purchaseOrder.create({
       purchaseName,
@@ -23,7 +23,7 @@ const createOrder = async (req, res) => {
       providerName,
       totalPrice: 0,
     });
-
+    console.log('ok2')
     // Loop through the phoneList array
 
     const phoneExit = await db.phone.findOne({

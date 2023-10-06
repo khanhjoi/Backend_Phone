@@ -18,12 +18,14 @@ router.delete('/address/:id', auth, removeAddress);
 // cart of user
 router.get('/cart', auth, getCart);
 router.post('/cart', auth, addItemToCart);
+router.put('/cart', auth, updateItemToCart);
+router.delete('/cart', auth, removeItemToCart);
 
 // normal user
 router.post('/register', register);
 router.post('/login', login);
-router.get('/:id', auth, getUser);
-router.put('/:id', auth, updateUser);
+router.get('/', auth, getUser);
+router.put('/', auth, updateUser);
 
 // admin
 // router.post('/', auth, createUser)

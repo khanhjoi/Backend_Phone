@@ -7,7 +7,7 @@ import auth from './middleware/auth.js';
 const app = express();
 const PORT = process.env.PORT || 8080;
 var CorsOpt = {
-  origin: 'http://localhost:8001'
+  origin: 'http://localhost:3000'
 }
 
 // config middleware

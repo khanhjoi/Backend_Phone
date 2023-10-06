@@ -35,6 +35,7 @@ db.sequelize = sequelize
 
 // Phone
 import phoneModel from './Phone/phoneModel.js';
+import PhoneBanner from './Phone/phoneBanner.js';
 import phoneDetail from './Phone/phoneDetail.js';
 import categoryModel from './Phone/categoryModel.js';
 import brandModel from './Phone/brandModel.js';
@@ -42,6 +43,7 @@ import discountModel from './Phone/discountModel.js';
 import colorModel from './Phone/colorModel.js';
 import capacityModel from './Phone/capacityModel.js';
 db.phone = phoneModel(sequelize, DataTypes)
+db.PhoneBanner = PhoneBanner(sequelize, DataTypes)
 db.category = categoryModel(sequelize, DataTypes)
 db.brand = brandModel(sequelize, DataTypes)
 db.discount = discountModel(sequelize, DataTypes)
@@ -73,18 +75,14 @@ import PurchaseOrder from './Provide/PurchaseOrder.js';
 db.purchaseOrder = PurchaseOrder(sequelize, DataTypes);
 db.PurchaseDetail = PurchaseDetail(sequelize, DataTypes);
 
-db.purchaseOrder.hasOne(db.PurchaseDetail, { foreignKey: 'purchaseOrderId', allowNull: false });
-db.PurchaseDetail.belongsTo(db.purchaseOrder);
-db.phone.hasOne(db.PurchaseDetail, { foreignKey: 'phoneId', allowNull: false });
-db.PurchaseDetail.belongsTo(db.phone);
 // --------- define relationship ------
 
 // USER DEFINE 
 import User from './User/User.js';
 import Address from './User/Address.js';
 import Cart from './User/Cart.js';
-import CartDetail from './User/DetailCart.js'
 import Order from './User/Order.js';
+import OrderDetail from './User/OrderDetail.js';
 import Payment from './User/Payment.js';
 import State from './User/State.js';
 import Rate from './User/rate.js';
@@ -93,9 +91,9 @@ db.user = User(sequelize, DataTypes);
 db.address = Address(sequelize, DataTypes);
 db.cart = Cart(sequelize, DataTypes);
 db.order = Order(sequelize, DataTypes);
+db.orderDetail = OrderDetail(sequelize, DataTypes);
 db.payment = Payment(sequelize, DataTypes);
 db.state = State(sequelize, DataTypes);
-db.cartDetail =  CartDetail(sequelize, DataTypes);
 db.rate = Rate(sequelize, DataTypes);
 
 // user -> address
@@ -104,17 +102,23 @@ db.user.hasMany(db.address, {
 });
 db.address.belongsTo(db.user)
 
-// user -> cart
-db.user.hasOne(db.cart, {
-  foreignKey: "userId"
-});
+// user with phone -> to cart 
+db.user.hasOne(db.cart, {foreignKey: 'userId', primaryKey: true, allowNull: false })
 db.cart.belongsTo(db.user)
+db.phone.hasMany(db.cart, {foreignKey: 'phoneId', primaryKey: true, allowNull: false })
+db.cart.belongsTo(db.phone)
 
-// cart -> order
-db.cart.hasMany(db.order, {
-  foreignKey: "cartId"
+// order -> payment
+db.payment.hasMany(db.order, {
+  foreignKey: "paymentId"
 })
-db.order.belongsTo(db.cart);
+db.order.belongsTo(db.payment)
+
+// order -> state
+db.state.hasMany(db.order, {
+  foreignKey: "stateId"
+})
+db.order.belongsTo(db.state)
 
 // user -> order
 db.user.hasMany(db.order, {
@@ -122,20 +126,11 @@ db.user.hasMany(db.order, {
 });
 db.order.belongsTo(db.user)
 
-// order -> payment
-db.payment.hasMany(db.order, {
-  foreignKey: "OrderIdId"
-})
-db.order.belongsTo(db.payment)
+db.order.hasOne(db.orderDetail, {foreignKey: 'orderId', primaryKey: true, allowNull: false })
+db.orderDetail.belongsTo(db.order)
+db.phone.hasMany(db.orderDetail, {foreignKey: 'phoneId', primaryKey: true, allowNull: false })
+db.cart.belongsTo(db.phone)
 
-// order -> state
-db.state.hasMany(db.order, {
-  foreignKey: "OrderIdId"
-})
-db.order.belongsTo(db.state)
-
-db.cart.belongsToMany(db.phone, { through: db.cartDetail })
-db.phone.belongsToMany(db.cart, { through: db.cartDetail })
 
 // rate USEr
 db.user.hasMany(db.rate);
