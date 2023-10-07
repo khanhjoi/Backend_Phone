@@ -1,4 +1,3 @@
-import Cart from "../models/User/Cart.js";
 import db from "../models/index.js";
 
 export const getCart = async (req, res) => {
@@ -11,11 +10,15 @@ export const getCart = async (req, res) => {
       },
       include: [
         {
-          model: db.phone
-          ,
+          model: db.phone,
           attributes: {
-            exclude: ['brandId', 'categoryId', 'detail'] // Add any fields you want to exclude here
-          }
+            exclude: ['brandId', 'categoryId', 'detail', 'phoneBannerId'] // Add any fields you want to exclude here
+          },
+          include: [
+            {
+              model: db.discount
+            }
+          ]
         }
       ],
       attributes: {
@@ -23,7 +26,30 @@ export const getCart = async (req, res) => {
       }
     });
 
-    return res.status(200).json(cart);
+    let additionalPrice = 0;
+    for(const phone of cart) {
+      const color= await db.color.findOne({
+        where: {
+          id: phone.colorId,
+        }
+      })
+      
+      const capacity= await db.capacity.findOne({
+        where: {
+          id: phone.capacityId,
+        }
+      })
+      
+      if(color.additionalPrice !== null) {
+        additionalPrice += color.additionalPrice
+      }
+
+      if(capacity.addiTionalPrice !== null) {
+        additionalPrice += capacity.additionalPrice
+      }
+    }
+
+    return res.status(200).json({cart, additionalPrice});
   } catch (error) {
     return res.status(400).json(error);
   }

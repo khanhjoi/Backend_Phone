@@ -7,6 +7,8 @@ import { newAddress, updateAddress, removeAddress } from '../controllers/address
 // cart controller
 import { getCart, addItemToCart, updateItemToCart, removeItemToCart } from '../controllers/cartController.js'
 
+import { getOrderUser, getAllOrderUser, createOrder,  getAllOrderAdmin, handleOrderAdmin, handleOrderUser, deleteOrder} from '../controllers/orderController.js';
+
 
 const router = express.Router();
 
@@ -14,6 +16,13 @@ const router = express.Router();
 router.post('/address', auth ,newAddress);
 router.put('/address/:id', auth, updateAddress);
 router.delete('/address/:id', auth, removeAddress);
+
+// order of user
+router.get('/order', auth, getAllOrderUser);
+router.get('/order/:id', auth, getOrderUser);
+router.post('/order', auth, createOrder);
+router.post('/getOrder', auth, handleOrderUser);
+router.delete('/order/:id', auth, deleteOrder);
 
 // cart of user
 router.get('/cart', auth, getCart);
@@ -31,5 +40,7 @@ router.put('/', auth, updateUser);
 // router.post('/', auth, createUser)
 router.get('/', auth, getAllUser);
 router.delete('/', auth, deleteUser);
+router.get('/admin/order', auth, getAllOrderAdmin);
+router.post('/admin/order', auth, handleOrderAdmin);
 
 export default router;
