@@ -145,58 +145,58 @@ db.rate.belongsTo(db.phone)
 
 // create state and payment 
 // *Note: if delete table in mysql -> comment all this init then uncomment
-const statePrepare = await db.state.findOne({
-  where:{
-    nameState: "đang chuẩn bị"
-  }
-})
-const stateDelivery = await db.state.findOne({
-  where:{
-    nameState: "đang giao"
-  }
-})
-const stateFinish = await db.state.findOne({
-  where:{
-    nameState: "đã nhận"
-  }
-})
+// const statePrepare = await db.state.findOne({
+//   where:{
+//     nameState: "đang chuẩn bị"
+//   }
+// })
+// const stateDelivery = await db.state.findOne({
+//   where:{
+//     nameState: "đang giao"
+//   }
+// })
+// const stateFinish = await db.state.findOne({
+//   where:{
+//     nameState: "đã nhận"
+//   }
+// })
 
-if(!statePrepare) { 
-  await db.state.create({ nameState: "đang chuẩn bị" })
-}
-if(!stateDelivery) {
-  await db.state.create({ nameState: "đang giao" })
-}
-if(!stateFinish) {
-  await db.state.create({ nameState: "đã nhận" })
+// if(!statePrepare) { 
+//   await db.state.create({ nameState: "đang chuẩn bị" })
+// }
+// if(!stateDelivery) {
+//   await db.state.create({ nameState: "đang giao" })
+// }
+// if(!stateFinish) {
+//   await db.state.create({ nameState: "đã nhận" })
 
-}
+// }
 
-const directPayment = await db.payment.findOne({
-  where:{
-    namePayment: "Thanh toán  trực tiếp"
-  }
-})
-const bankPayment = await db.payment.findOne({
-  where:{
-    namePayment: "Thanh toán qua ngân hàng"
-  }
-})
-const creditPayment = await db.payment.findOne({
-  where:{
-    namePayment: "Thanh toán qua thẻ tín dụng"
-  }
-})
+// const directPayment = await db.payment.findOne({
+//   where:{
+//     namePayment: "Thanh toán  trực tiếp"
+//   }
+// })
+// const bankPayment = await db.payment.findOne({
+//   where:{
+//     namePayment: "Thanh toán qua ngân hàng"
+//   }
+// })
+// const creditPayment = await db.payment.findOne({
+//   where:{
+//     namePayment: "Thanh toán qua thẻ tín dụng"
+//   }
+// })
 
-if(!directPayment) { 
-  await db.payment.create({ namePayment: "Thanh toán  trực tiếp" })
-}
-if(!bankPayment) {
-  await db.payment.create({ namePayment: "Thanh toán qua ngân hàng" })
-}
-if(!creditPayment) {
-  await db.payment.create({ namePayment: "Thanh toán qua thẻ tín dụng" })
-}
+// if(!directPayment) { 
+//   await db.payment.create({ namePayment: "Thanh toán  trực tiếp" })
+// }
+// if(!bankPayment) {
+//   await db.payment.create({ namePayment: "Thanh toán qua ngân hàng" })
+// }
+// if(!creditPayment) {
+//   await db.payment.create({ namePayment: "Thanh toán qua thẻ tín dụng" })
+// }
 
 
 

@@ -58,27 +58,79 @@ const createPhone = async (req, res) => {
 };
 
 const getAllPhone = async (req, res) => {
-  const { brand, category, priceLow, priceUp } = req.query;
+  const { brand, category, priceLow, priceUp, priceMin, priceMax} = req.query;
   let phones = null;
-  phones = await db.phone.findAll({
-    where: {
-      price: {
-        [Op.gt]: Number(priceLow)|| 0,
-        [Op.lt]: Number(priceUp) || Number.MAX_VALUE
-      }
-    },
-    include: [
-      {
-        model: db.brand,
-        where: brand ? { brand_name: brand } : {},
+  if(priceMin) {
+    phones = await db.phone.findAll({
+      where: {
+        price: {
+          [Op.lt]: Number(priceMin) || 3000000,
+        }
       },
-      {
-        model: db.category,
-        where: category ? { category_name: category } : {},
+      include: [
+        {
+          model: db.brand,
+          where: brand ? { brand_name: brand } : {},
+        },
+        {
+          model: db.category,
+          where: category ? { category_name: category } : {},
+        },
+      ],
+    });
+  
+  } else if(priceLow && priceUp)  {
+    phones = await db.phone.findAll({
+      where: {
+        price: {
+          [Op.gt]: Number(priceLow) || 0,
+          [Op.lt]: Number(priceUp) || Number.MAX_VALUE,
+        }
       },
-    ],
-  });
-
+      include: [
+        {
+          model: db.brand,
+          where: brand ? { brand_name: brand } : {},
+        },
+        {
+          model: db.category,
+          where: category ? { category_name: category } : {},
+        },
+      ],
+    });
+  } else if(priceMax) {
+    phones = await db.phone.findAll({
+      where: {
+        price: {
+          [Op.gt]: Number(priceMax) || 7000000,
+        }
+      },
+      include: [
+        {
+          model: db.brand,
+          where: brand ? { brand_name: brand } : {},
+        },
+        {
+          model: db.category,
+          where: category ? { category_name: category } : {},
+        },
+      ],
+    });
+  } else {
+    phones = await db.phone.findAll({
+      include: [
+        {
+          model: db.brand,
+          where: brand ? { brand_name: brand } : {},
+        },
+        {
+          model: db.category,
+          where: category ? { category_name: category } : {},
+        },
+      ],
+    });
+  }
+  
   if (phones.length === 0) {
     return res.status(200).json({ message: "No Phone in store" });
   }
@@ -124,7 +176,7 @@ const getPhone = async (req, res) => {
     return res.status(400).json({ message: "can't find phone"});
   }
 
-  return res.status(200).json({phone, phoneDetail});
+  return res.status(200).json({phone, option:phoneDetail});
 }
 
 export default { createPhone, getAllPhone, getPhone};

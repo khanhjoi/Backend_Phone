@@ -3,11 +3,9 @@ import db from "../models/index.js";
 
 const createOrder = async (req, res) => {
   try {
-    const { providerName, providerLocation, purchaseName, totalPrice, phone, mainImage } = req.body;
-    
-    console.log(req.user)
+    const { providerName, providerLocation, purchaseName, totalPrice, phone, mainImage } = req.body.provider;
+    const detail  = req.body.detail;
     const user = await db.user.findOne({ where : {email: req.user.data.email}});
-    
     if(!user) {
       return res.status(403).json({ message: "Người dùng không tồn tại"});
     }
@@ -15,54 +13,62 @@ const createOrder = async (req, res) => {
     if(!user.role) {
       return res.status(403).json({ message: "Người dùng không thể thực hiện chức năng này"});
     }
-    console.log('ok')
+
+    if(!(providerName && providerLocation && purchaseName && totalPrice && phone)) {
+      return res.status(403).json({ message: "bạn nhập thiếu dữ liệu"});
+    }
+
     // Create the purchase order
     const purchaseOrder = await db.purchaseOrder.create({
       purchaseName,
       providerLocation,
       providerName,
-      totalPrice: 0,
+      totalPrice: totalPrice,
     });
-    console.log('ok2')
     // Loop through the phoneList array
-
+    console.log(phone)
     const phoneExit = await db.phone.findOne({
       where: {name: phone.name}
     })
 
     if(!phoneExit){
+      console.log('check')
 
       let brand = await db.brand.findOne({ where: { brand_name: phone.brandName } });
-      if (!brand) {
+      if (!brand && phone.brandName !== '') {
         brand = await db.brand.create({ brand_name: phone.brandName });
       }
 
       // Check if the category already exists, or create a new one
       let category = await db.category.findOne({ where: { category_name: phone.categoryName } });
-      if (!category) {
+      if (!category && phone.categoryName !== '') {
         category = await db.category.create({ category_name: phone.categoryName });
       }
-
+      
       const phoneCreate = await db.phone.create({
         name: phone.name,
-        detail: phone.detail,
+        detail: detail,
         price: phone.price,
         mainImage: phone.mainImage,
         brandId: brand.id,
         categoryId: category.id
       });
- 
+
+      
       // create color and capacity to create detailPhone
       for (const opt of phone.option) {
+        console.log(opt)
+        console.log('ok')
         const colorPhone = await db.color.create({
-          nameColor: opt.color.color,
-          additionalPrice: opt.color.additionalPrice,
+          nameColor: opt.color,
+          additionalPrice: opt.additionalPrice,
         })
 
         const capacityPhone = await db.capacity.create({
-          nameCapacity: opt.capacity.capacity,
-          additionalPrice: opt.capacity.additionalPrice,
+          nameCapacity: opt.capacity,
+          additionalPrice: opt.additionalPrice,
         })
+
 
         const phoneDetail = await db.phoneDetail.create({
           phoneId: phoneCreate.id,
@@ -70,7 +76,7 @@ const createOrder = async (req, res) => {
           capacityId: capacityPhone.id,
           quantity: opt.quantity
         })
-
+   
         // create Purchase detail
         const PurchaseDetail = await db.PurchaseDetail.create({
           phoneId: phoneCreate.id,
@@ -81,6 +87,7 @@ const createOrder = async (req, res) => {
           quantity: opt.quantity
         })
       }
+
       return res.status(200).json({message: "nhập hàng thành công"});
     }else {
       // if phone exited
