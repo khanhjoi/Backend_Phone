@@ -16,7 +16,7 @@ export const addComment =  async (req, res) => {
     });
 
     const rate = await db.rate.create({
-      userUserId: user.userId,
+      userId: user.id,
       phoneId: phone.id,
       start: start,
       comment: comment || null,

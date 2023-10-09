@@ -154,11 +154,13 @@ const getPhone = async (req, res) => {
           {
             model: db.capacity
           }
-        ]
+        ],attributes: {
+          exclude: ['phoneBannerId','colorId', 'phoneId', 'capacityId'] // Add any fields you want to exclude here
+        }
       }
     ],
     attributes: {
-      exclude: ['id', 'name', 'detail', 'mainImage', 'price', 'brandId', 'categoryId', 'discountId'] // Add any fields you want to exclude here
+      exclude: ['id','phoneBannerId', 'name', 'detail', 'mainImage', 'price', 'brandId', 'categoryId', 'discountId'] // Add any fields you want to exclude here
     }
   });
 
@@ -169,6 +171,17 @@ const getPhone = async (req, res) => {
     include: [
       {
         model: db.rate,
+        include: [
+          {
+            model: db.user,
+            attributes: {
+              exclude: ['email','phone', 'password', 'role', 'gender', 'token', 'createdAt','updatedAt'] // Add any fields you want to exclude here
+            }
+          }
+        ],
+        attributes: {
+          exclude: ['updatedAt','userId', 'phoneId', 'capacityId'] // Add any fields you want to exclude here
+        }
       }
     ]
   });
