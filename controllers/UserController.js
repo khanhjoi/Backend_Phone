@@ -36,7 +36,7 @@ export const register = async (req, res) => {
      },
       process.env.TOKEN_KEY,
       {
-        expiresIn: '2d'
+        expiresIn: '2h'
       }
     )
   
@@ -71,7 +71,7 @@ export const login = async (req, res) => {
        },
         process.env.TOKEN_KEY,
         {
-          expiresIn: '2d'
+          expiresIn: '2h'
         }
       )
 
@@ -158,7 +158,13 @@ export const getAllUser = async (req, res) => {
 export const getUser = async (req, res) => {
   try {
     
-    const user = await db.user.findByPk(req.user.data.userId);
+    const user = await db.user.findByPk(req.user.data.userId, {
+      include: [
+        {
+          model: db.address
+        }
+      ]
+    });
 
     if(!user) {
       return res.status(400).json({message : "Không thể tìm thấy người dùng này !!!"})

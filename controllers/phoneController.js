@@ -58,82 +58,193 @@ const createPhone = async (req, res) => {
 };
 
 const getAllPhone = async (req, res) => {
-  const { brand, category, priceLow, priceUp, priceMin, priceMax} = req.query;
+  const { brand, category, priceLow, priceUp, priceMin, priceMax, search} = req.query;
   let phones = null;
-  if(priceMin) {
-    phones = await db.phone.findAll({
-      where: {
-        price: {
-          [Op.lt]: Number(priceMin) || 3000000,
-        }
-      },
-      include: [
-        {
-          model: db.brand,
-          where: brand ? { brand_name: brand } : {},
+  // if search exit
+  if(search) {
+    if(priceMin) {
+      phones = await db.phone.findAll({
+        where: {
+          price: {
+            [Op.lt]: Number(priceMin) || 3000000,
+          },
+          name: {
+            [Op.like]: `%${search}%`
+          }
         },
-        {
-          model: db.category,
-          where: category ? { category_name: category } : {},
+        include: [
+          {
+            model: db.brand,
+            where: brand ? { brand_name: brand } : {},
+          },
+          {
+            model: db.category,
+            where: category ? { category_name: category } : {},
+          },
+          {
+            model : db.rate
+          }
+        ],
+      });
+    
+    } else if(priceLow && priceUp)  {
+      phones = await db.phone.findAll({
+        where: {
+          price: {
+            [Op.gt]: Number(priceLow) || 0,
+            [Op.lt]: Number(priceUp) || Number.MAX_VALUE,
+          },
+          name: {
+            [Op.like]: `%${search}%`
+          }
         },
-      ],
-    });
-  
-  } else if(priceLow && priceUp)  {
-    phones = await db.phone.findAll({
-      where: {
-        price: {
-          [Op.gt]: Number(priceLow) || 0,
-          [Op.lt]: Number(priceUp) || Number.MAX_VALUE,
-        }
-      },
-      include: [
-        {
-          model: db.brand,
-          where: brand ? { brand_name: brand } : {},
+        include: [
+          {
+            model: db.brand,
+            where: brand ? { brand_name: brand } : {},
+          },
+          {
+            model: db.category,
+            where: category ? { category_name: category } : {},
+          },
+          {
+            model : db.rate
+          }
+        ],
+      });
+    } else if(priceMax) {
+      phones = await db.phone.findAll({
+        where: {
+          price: {
+            [Op.gt]: Number(priceMax) || 7000000,
+          },
+          name: {
+            [Op.like]: `%${search}%`
+          }
         },
-        {
-          model: db.category,
-          where: category ? { category_name: category } : {},
+        include: [
+          {
+            model: db.brand,
+            where: brand ? { brand_name: brand } : {},
+          },
+          {
+            model: db.category,
+            where: category ? { category_name: category } : {},
+          },
+          {
+            model : db.rate
+          }
+        ],
+      });
+    } else {
+      phones = await db.phone.findAll({
+        where: {
+          name: { [Op.like]: `%${search}%`}
         },
-      ],
-    });
-  } else if(priceMax) {
-    phones = await db.phone.findAll({
-      where: {
-        price: {
-          [Op.gt]: Number(priceMax) || 7000000,
-        }
-      },
-      include: [
-        {
-          model: db.brand,
-          where: brand ? { brand_name: brand } : {},
-        },
-        {
-          model: db.category,
-          where: category ? { category_name: category } : {},
-        },
-      ],
-    });
+        include: [
+          {
+            model: db.brand,
+            where: brand ? { brand_name: brand } : {},
+          },
+          {
+            model: db.category,
+            where: category ? { category_name: category } : {},
+          },
+          {
+            model : db.rate
+          }
+        ],
+      });
+    }
   } else {
-    phones = await db.phone.findAll({
-      include: [
-        {
-          model: db.brand,
-          where: brand ? { brand_name: brand } : {},
+    if(priceMin) {
+      phones = await db.phone.findAll({
+        where: {
+          price: {
+            [Op.lt]: Number(priceMin) || 3000000,
+          }
         },
-        {
-          model: db.category,
-          where: category ? { category_name: category } : {},
-        },
-      ],
-    });
+        include: [
+          {
+            model: db.brand,
+            where: brand ? { brand_name: brand } : {},
+          },
+          {
+            model: db.category,
+            where: category ? { category_name: category } : {},
+          },
+          {
+            model : db.rate
+          }
+        ],
+      });
+    
+      } else if(priceLow && priceUp)  {
+        phones = await db.phone.findAll({
+          where: {
+            price: {
+              [Op.gt]: Number(priceLow) || 0,
+              [Op.lt]: Number(priceUp) || Number.MAX_VALUE,
+            }
+          },
+          include: [
+            {
+              model: db.brand,
+              where: brand ? { brand_name: brand } : {},
+            },
+            {
+              model: db.category,
+              where: category ? { category_name: category } : {},
+            },
+            {
+              model : db.rate
+            }
+          ],
+        });
+      } else if(priceMax) {
+        phones = await db.phone.findAll({
+          where: {
+            price: {
+              [Op.gt]: Number(priceMax) || 7000000,
+            }
+          },
+          include: [
+            {
+              model: db.brand,
+              where: brand ? { brand_name: brand } : {},
+            },
+            {
+              model: db.category,
+              where: category ? { category_name: category } : {},
+            },
+            {
+              model : db.rate
+            }
+          ],
+        });
+      } else {
+        phones = await db.phone.findAll({
+          include: [
+            {
+              model: db.brand,
+              where: brand ? { brand_name: brand } : {},
+            },
+            {
+              model: db.category,
+              where: category ? { category_name: category } : {},
+            },
+            {
+              model : db.rate
+            }
+          ],
+        });
+    }
   }
   
   if (phones.length === 0) {
     return res.status(200).json({ message: "No Phone in store" });
   }
+
 
   return res.status(200).json(phones);
 };
@@ -180,7 +291,7 @@ const getPhone = async (req, res) => {
           }
         ],
         attributes: {
-          exclude: ['updatedAt','userId', 'phoneId', 'capacityId'] // Add any fields you want to exclude here
+          exclude: ['updatedAt','userId', 'capacityId'] // Add any fields you want to exclude here
         }
       }
     ]

@@ -22,7 +22,7 @@ export const getCart = async (req, res) => {
         }
       ],
       attributes: {
-        exclude: ['userId', 'phoneId'] // Add any fields you want to exclude here
+        exclude: ['userId', 'phoneId', ] // Add any fields you want to exclude here
       }
     });
 
@@ -57,9 +57,11 @@ export const getCart = async (req, res) => {
 
 export const addItemToCart = async (req, res) => {
   try { 
-    const { phoneId, quantity, capacityId, colorId, colorName, capacityName } = req.body
+    const { phoneId, quantity, capacityId, colorId, colorName, capacityName } = req.body.option;
+
     const userId = req.user.data.userId; // Assuming you have the user ID from the request
     // Find the user with the specified ID and include the associated phones
+
     const count = await db.cart.count({
       where: {
         userId: userId,
@@ -76,10 +78,11 @@ export const addItemToCart = async (req, res) => {
       
       let checkExit = false;
 
-      for (let phone of cart) {
-        if(phoneId === phone.phoneId && capacityId === phone.capacityId && colorId === phone.colorId && userId === phone.userId) {
+      for (let phone of cart) {  
+        if(phoneId == phone.phoneId && capacityId == phone.capacityId && colorId == phone.colorId && userId == phone.userId) {
           const cartUpdate = await db.cart.findOne({
             where:{
+              userId: userId,
               phoneId: phone.phoneId,
               capacityId: phone.capacityId,
               colorId: phone.colorId
@@ -88,7 +91,7 @@ export const addItemToCart = async (req, res) => {
           cartUpdate.quantity += quantity;
           checkExit = true;
           await cartUpdate.save();
-        }else {
+        } else {
           continue;
         }
       }
@@ -133,9 +136,10 @@ export const addItemToCart = async (req, res) => {
 
 export const updateItemToCart = async (req, res) => {
   try {
-    const { phoneId, quantity, capacityId, colorId} = req.body
+    const { quantity, capacityId, colorId } = req.body.item
+    const phoneId = req.body.item.phone.id;
     
-    if(!(phoneId && capacityId && colorId && quantity)) {
+    if(!(phoneId && capacityId && colorId)) {
       return res.status(400).json({message : "Có lỗi xảy ra"});
     }
 
@@ -151,10 +155,15 @@ export const updateItemToCart = async (req, res) => {
       return res.status(400).json({message : "Có lỗi xảy ra"});
     }
 
+    if(quantity <= 0) {
+      await cart.destroy();
+      return res.status(400).json({message : "Đã xóa sản phẩm khỏi cửa hàng"});
+    }
+
     cart.quantity = quantity;
     await cart.save();
     
-    return res.status(200).json(cart)
+    return res.status(200).json({message : "Cập nhật sản phẩm thành công"})
   } catch (error) {
     return res.status(400).json(error);
   }

@@ -5,7 +5,7 @@ export default (sequelize, DataTypes) => {
       autoIncrement: true,
       primaryKey: true
     },
-    start: {
+    star: {
       type: DataTypes.INTEGER,
       allowNull: false
     },
