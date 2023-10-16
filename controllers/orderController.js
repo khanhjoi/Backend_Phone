@@ -40,7 +40,7 @@ export const getAllOrderUser = async (req, res) => {
 export const createOrder = async (req, res) => {
   try {
     const userId = req.user.data.userId;
-    const { paymentId, totalPrice } =  req.body;
+    const { paymentId, totalPrice, address} =  req.body;
     const cart = await db.cart.findAll({
       where: {
         userId: userId,
@@ -66,6 +66,9 @@ export const createOrder = async (req, res) => {
     if(cart.length <= 0) {
       return  res.status(200).json({message:  "Thêm sản phầm vào giỏ hàng để tạo đơn hàng!"})
     }
+    if(!address) {
+      return  res.status(200).json({message:  "phải có địa chỉ giao hàng"})
+    }
     
     if(!(paymentId &&  totalPrice)) {
       return res.status(400).json({message: "có lỗi xảy ra"});
@@ -75,11 +78,11 @@ export const createOrder = async (req, res) => {
       userId: userId,
       paymentId: paymentId,
       stateId: 1,
+      address: address,
       totalPrice: totalPrice
     })
 
     for(const phone of  cart) {
-
       const phoneDetail= await db.phoneDetail.findOne({
         where:{
           phoneId:  phone.phone.id,

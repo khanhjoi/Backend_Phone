@@ -179,23 +179,16 @@ db.rate.belongsTo(db.phone)
 // })
 // const bankPayment = await db.payment.findOne({
 //   where:{
-//     namePayment: "Thanh toán qua ngân hàng"
+//     namePayment: "Thanh toán Online"
 //   }
 // })
-// const creditPayment = await db.payment.findOne({
-//   where:{
-//     namePayment: "Thanh toán qua thẻ tín dụng"
-//   }
-// })
+
 
 // if(!directPayment) { 
 //   await db.payment.create({ namePayment: "Thanh toán  trực tiếp" })
 // }
 // if(!bankPayment) {
 //   await db.payment.create({ namePayment: "Thanh toán qua ngân hàng" })
-// }
-// if(!creditPayment) {
-//   await db.payment.create({ namePayment: "Thanh toán qua thẻ tín dụng" })
 // }
 
 

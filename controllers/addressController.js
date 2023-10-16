@@ -3,15 +3,10 @@ import db from '../models/index.js';
 export const newAddress = async (req, res) => {
   try {
     const { commune, wart, city, detail } = req.body;
+    const userId = req.user.data.userId;
 
     if(!(commune && wart && city))  {
       return res.status(400).json({message: "Phải điền đủ thông tin !!!"});
-    }
-
-    const user = await db.user.findOne({ where : {email: req.user.email}});
-
-    if(!user) {
-      return res.status(400).json({message: "Người dùng không tồn tại"});
     }
 
     const address = await db.address.create({
@@ -19,17 +14,14 @@ export const newAddress = async (req, res) => {
       wart,
       city,
       detail,
-      userId: user.userId,
+      userId: userId,
     })
 
-    const newUser = await db.user.findOne({
-      where: { email: req.user.email },
-      include: [{ model: db.address }],
-    });
+    if(!address) {
+      return res.status(400).json({message: "Có lỗi xảy ra"});
+    }
 
-    console.log(newUser)
-
-    return res.status(200).json(newUser);
+    return res.status(200).json({message: "Thêm thành công địa chỉ"});
   } catch (error) {
     return res.status(400).json(error);
   }

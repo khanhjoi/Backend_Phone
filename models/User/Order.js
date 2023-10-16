@@ -4,6 +4,10 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false
     },
+    address: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
   })
   return Order;
 }
