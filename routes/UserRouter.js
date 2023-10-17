@@ -15,7 +15,7 @@ const router = express.Router();
 // address of user
 router.post('/address', auth ,newAddress);
 router.put('/address/:id', auth, updateAddress);
-router.delete('/address/:id', auth, removeAddress);
+router.delete('/address', auth, removeAddress);
 
 // order of user
 router.get('/order', auth, getAllOrderUser);

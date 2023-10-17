@@ -67,17 +67,20 @@ export const updateAddress = async (req, res) => {
 
 export const removeAddress = async (req, res) => {
   try {
-    const user = await db.user.findOne({
-      where: { email: req.user.email },
-      include: [{ model: db.address }],
-    });
+    const { addressId } = req.body;
+    const userId = req.user.data.userId;
 
     const addressUser = await db.address.findOne({
       where: {
-        addressId: req.params.id,
-        userId: user.userId,
+        addressId: addressId,
+        userId: userId,
       }
     })
+
+    if(!addressUser) {
+      return res.status(400).json({ message: "Có lỗi xảy ra!!!"});
+    
+    }
 
     await addressUser.destroy();
 
