@@ -15,7 +15,7 @@ router.delete('/:id/comment/:rateId', auth, deleteComment);
 
 
 // set discount for phone 
-router.get('/discount/:idPhone', auth ,discountController.getPhoneDiscount);
+// router.get('/discount/phone', auth ,discountController.getPhoneDiscount);
 router.put('/discount/:id', auth ,discountController.updateDiscount);
 router.delete('/discount/:id', auth ,discountController.deleteDiscount);
 router.get('/discount', auth ,discountController.getAllDiscount);

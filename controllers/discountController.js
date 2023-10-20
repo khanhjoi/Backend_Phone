@@ -1,20 +1,45 @@
+import phoneDetail from '../models/Phone/phoneDetail.js';
 import db from '../models/index.js';
 
 const getAllDiscount = async (req, res) => {
   try {
-    const discounts = await db.discount.findAll({
-      include: [
-        { model: db.phone },
-      ]
-    })
+    const phones = await db.phone.findAll({
+    });
 
-    if(discounts.length === 0) {
-      return res.status(400).json({ message: "Chưa có giảm giá !!"});
+    let phoneWithDetail = []
+    for(const phone of phones) {
+      let phoneDetailFormat = {};
+      const phoneDetail = await db.phoneDetail.findAll({
+        where: {
+          phoneId: phone.id
+        },
+        include: [
+          {
+            model: db.color,
+          },
+          {
+            model: db.capacity
+          }
+        ],
+        attributes: {
+          exclude: ['colorId','capacityId', 'phoneId'] // Add any fields you want to exclude here
+        }
+      })
+      phoneDetailFormat = {
+        ...phone.toJSON(),
+        phoneDetail
+      }
+      phoneWithDetail.push(phoneDetailFormat)
     }
 
-    return res.status(200).json(discounts);
+    if(phoneWithDetail.length <= 0) {
+      return res.status(200).json({message : "Có lỗi xảy ra rồi"});
+
+    }
+
+    return res.status(200).json(phoneWithDetail);
   } catch (error) {
-    return res.status(400).json(error);
+    console.log(error)
   }
 }
 
@@ -38,10 +63,14 @@ const getPhoneDiscount = async (req, res) => {
 
 const addDiscount = async (req, res) => {
   try {
-    const { nameDiscount, dateBegin, dateEnd, percent, listPhone } = req.body;
+    const { nameDiscount, dateBegin, dateEnd, percent, listPhonePromotion } = req.body;
     
     const dateB = new Date(dateBegin);
     const dateE = new Date(dateEnd);
+    
+    if(!(nameDiscount && dateBegin && dateE && percent && listPhonePromotion )) {
+      return res.status(400).json({message : "Thiếu dữ liệu vui lòng nhập lại"})
+    }
     
     let discount = await db.discount.findOne({
       where: { 
@@ -50,11 +79,8 @@ const addDiscount = async (req, res) => {
         dateEnd: dateE
       }
     });  
-    console.log('ok')
 
-    if(!discount) {
-      console.log('2')
-      
+    if(!discount) {  
       // check phone exit in discount -> if not
       discount = await db.discount.create({
         nameDiscount,
@@ -62,10 +88,14 @@ const addDiscount = async (req, res) => {
         dateEnd: dateE,
         percent,
       });
-      
-      for (const phone of listPhone) {
 
-        const phoneModel = await db.phone.findByPk(phone.phoneId);
+      if(listPhonePromotion.length <= 0) {
+        return res.status(400).json({message : "Chưa có điện thoại để giảm giá"})
+      }
+
+      for (const phone of listPhonePromotion) {
+        
+        const phoneModel = await db.phone.findByPk(phone.code);
         
         if(!phoneModel){
           return res.status(400).json({message : "có lỗi xảy ra"})
@@ -129,5 +159,7 @@ const deleteDiscount = async (req, res) => {
     return res.status(400).json(error);
   }
 }
+
+
 
 export default {getPhoneDiscount, addDiscount, updateDiscount, deleteDiscount, getAllDiscount};

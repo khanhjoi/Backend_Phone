@@ -1,6 +1,5 @@
 import db from "../models/index.js";
 
-
 const createOrder = async (req, res) => {
   try {
     const { providerName, providerLocation, purchaseName, totalPrice, phone, mainImage } = req.body.provider;
@@ -57,8 +56,6 @@ const createOrder = async (req, res) => {
       
       // create color and capacity to create detailPhone
       for (const opt of phone.option) {
-        console.log(opt)
-        console.log('ok')
         const colorPhone = await db.color.create({
           nameColor: opt.color,
           additionalPrice: opt.additionalPrice,
@@ -128,4 +125,23 @@ const createOrder = async (req, res) => {
   }
 };
 
-export default { createOrder };
+const getProviders = async (req, res) => {
+  try {
+    const providers = await db.Provider.findAll();
+
+    const user = await db.user.findByPk(req.user.data.userId);
+
+    if(!user.role) {
+      return res.status(400).json({message : 'Người dùng không thể thực hiện chức năng này!!'})
+    }
+
+    if(!providers || !user) {
+      return res.status(400).json({message : 'có lỗi xảy ra!!'})
+    }
+    return res.status(200).json(providers)
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export default { createOrder, getProviders };

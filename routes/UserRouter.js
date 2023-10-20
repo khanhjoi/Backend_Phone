@@ -1,7 +1,7 @@
 import express from 'express';
 import auth from '../middleware/auth.js';
 // user controller
-import { getUser, getAllUser, register, updateUser, login ,createUser, deleteUser } from '../controllers/UserController.js';
+import { getUser, getAllUser, register, updateUser, login , createUser, deleteUser } from '../controllers/UserController.js';
 // address controller
 import { newAddress, updateAddress, removeAddress } from '../controllers/addressController.js';
 // cart controller
@@ -9,8 +9,14 @@ import { getCart, addItemToCart, updateItemToCart, removeItemToCart } from '../c
 
 import { getOrderUser, getAllOrderUser, createOrder,  getAllOrderAdmin, handleOrderAdmin, handleOrderUser, deleteOrder} from '../controllers/orderController.js';
 
+import discount  from '../controllers/discountController.js';
 
 const router = express.Router();
+// normal user
+router.post('/register', register);
+router.post('/login', login);
+router.patch('/', auth, updateUser);
+router.get('/', auth, getUser);
 
 // address of user
 router.post('/address', auth ,newAddress);
@@ -30,15 +36,9 @@ router.post('/cart', auth, addItemToCart);
 router.put('/cart', auth, updateItemToCart);
 router.delete('/cart', auth, removeItemToCart);
 
-// normal user
-router.post('/register', register);
-router.post('/login', login);
-router.get('/', auth, getUser);
-router.put('/', auth, updateUser);
-
 // admin
 // router.post('/', auth, createUser)
-router.get('/', auth, getAllUser);
+router.get('/getAll', auth, getAllUser);
 router.delete('/', auth, deleteUser);
 router.get('/admin/order', auth, getAllOrderAdmin);
 router.post('/admin/order', auth, handleOrderAdmin);

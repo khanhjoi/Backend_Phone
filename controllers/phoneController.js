@@ -250,57 +250,62 @@ const getAllPhone = async (req, res) => {
 };
 
 const getPhone = async (req, res) => {
-  const id = req.params.id;
-  const phoneDetail = await db.phone.findAll({
-    where: {
-      id: id
-    },
-    include: [
-      {
-        model: db.phoneDetail,
-        include: [
-          {
-            model: db.color
-          },
-          {
-            model: db.capacity
-          }
-        ],attributes: {
-          exclude: ['phoneBannerId','colorId', 'phoneId', 'capacityId'] // Add any fields you want to exclude here
-        }
-      }
-    ],
-    attributes: {
-      exclude: ['id','phoneBannerId', 'name', 'detail', 'mainImage', 'price', 'brandId', 'categoryId', 'discountId'] // Add any fields you want to exclude here
-    }
-  });
-
-  const phone = await db.phone.findAll({
-    where: {
-      id: id
-    },
-    include: [
-      {
-        model: db.rate,
-        include: [
-          {
-            model: db.user,
-            attributes: {
-              exclude: ['email','phone', 'password', 'role', 'gender', 'token', 'createdAt','updatedAt'] // Add any fields you want to exclude here
+  try {
+    const id = req.params.id;
+    const phoneDetail = await db.phone.findAll({
+      where: {
+        id: id
+      },
+      include: [
+        {
+          model: db.phoneDetail,
+          include: [
+            {
+              model: db.color
+            },
+            {
+              model: db.capacity
             }
+          ],attributes: {
+            exclude: ['phoneBannerId','colorId', 'phoneId', 'capacityId'] // Add any fields you want to exclude here
           }
-        ],
-        attributes: {
-          exclude: ['updatedAt','userId', 'capacityId'] // Add any fields you want to exclude here
         }
+      ],
+      attributes: {
+        exclude: ['id','phoneBannerId', 'name', 'detail', 'mainImage', 'price', 'brandId', 'categoryId', 'discountId'] // Add any fields you want to exclude here
       }
-    ]
-  });
-  if(phone === null) {
-    return res.status(400).json({ message: "can't find phone"});
-  }
+    });
 
-  return res.status(200).json({phone, option:phoneDetail});
+    const phone = await db.phone.findAll({
+      where: {
+        id: id
+      },
+      include: [
+        {
+          model: db.rate,
+          include: [
+            {
+              model: db.user,
+              attributes: {
+                exclude: ['email','phone', 'password', 'role', 'gender', 'token', 'createdAt','updatedAt'] // Add any fields you want to exclude here
+              }
+            }
+          ],
+          attributes: {
+            exclude: ['updatedAt','userId', 'capacityId'] // Add any fields you want to exclude here
+          }
+        }
+      ]
+    });
+    if(phone === null) {
+      return res.status(400).json({ message: "can't find phone"});
+    }
+
+    return res.status(200).json({phone, option:phoneDetail});
+  } catch (error) {
+    console.log(error)
+  }
 }
+
 
 export default { createPhone, getAllPhone, getPhone};

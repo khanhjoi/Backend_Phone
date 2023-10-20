@@ -99,8 +99,9 @@ export const createUser = async (req, res) => {
 export const updateUser = async (req, res) => {
   try {
     const { firstName, lastName, email, phone } = req.body;
+    const userId = req.user.data.userId;
 
-    const user = await db.user.findByPk(req.params.id);
+    const user = await db.user.findByPk(userId);
 
     if(!user) {
       return res.status(400).json({message : "Không thể tìm thấy người dùng này !!!"})
@@ -114,13 +115,13 @@ export const updateUser = async (req, res) => {
       user.lastName = lastName;
     }
 
-    if(email) {
-      const oldUser = db.user.findOne({where : {email: email}});
-
-      if(oldUser) {
-        return res.status(403).json({message: "Email đã có người xử dụng !!"});
+    if (email && user.email !== email) {
+      const oldUser = await db.user.findOne({ where: { email: email } });
+    
+      if (oldUser !== null) {
+        return res.status(403).json({ message: "Email đã có người xử dụng !!" });
       }
-
+    
       user.email = email;
     }
 
@@ -129,10 +130,8 @@ export const updateUser = async (req, res) => {
     }
 
     await user.save();
-    // update address after
 
-    return res.status(200).json(user);
-
+    return res.status(200).json({success: "cập nhật thông tin thành công!!!"});
   } catch (error) {
     return res.status(400).json(error)
   }
