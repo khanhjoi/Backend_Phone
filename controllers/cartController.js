@@ -111,10 +111,7 @@ export const addItemToCart = async (req, res) => {
       return res.status(200).json({message: "thêm sản phẩm thành công"});
     }else {
       // user init cart
-  
       const phone = await db.phone.findByPk(phoneId)
-      console.log("okoko")
-
       if(!phone) {
         return res.status(400).json({message : "có lỗi xảy ra"})
       }
@@ -127,7 +124,7 @@ export const addItemToCart = async (req, res) => {
         capacityName,
         quantity
       })
-      return res.status(200).json({cart});
+      return res.status(200).json({message: "thêm sản phẩm thành công"});
     }
   } catch (error) {
     return res.status(400).json(error);

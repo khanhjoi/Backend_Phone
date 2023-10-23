@@ -306,6 +306,57 @@ const getPhone = async (req, res) => {
     console.log(error)
   }
 }
+const getAllPhoneAdmin = async (req, res) => {
+  try {
+    const phones = await db.phone.findAll({
+      include: [
+        {
+          model: db.discount,
+        }
+      ],
+      attributes: {
+        exclude: ['phoneBannerId','categoryId ', 'discountId', 'brandId'] // Add any fields you want to exclude here
+      }
+    });
+
+    if(phones === null) {
+      return res.status(400).json({ message: "Không thể tìm điện thoại"});
+    }
+
+    let phoneWithOption = [];
+
+    for(const phone of phones) {
+      let formatOption = {}
+      const option = await db.phoneDetail.findAll({
+        where: {
+          phoneId: phone.id
+        },
+        include:[
+          {
+            model: db.color,
+          }, {
+            model: db.capacity
+          }
+        ],
+        attributes: {
+          exclude: ['colorId', 'capacityId'] // Add any fields you want to exclude here
+        }, 
+      })
+      
+      formatOption = {... 
+        phone.toJSON(),
+        option
+      }
+      phoneWithOption.push(formatOption)
+    }
 
 
-export default { createPhone, getAllPhone, getPhone};
+    return res.status(200).json(phoneWithOption);
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+
+
+export default { createPhone, getAllPhone, getPhone, getAllPhoneAdmin};

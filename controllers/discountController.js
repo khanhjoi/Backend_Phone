@@ -94,7 +94,7 @@ const addDiscount = async (req, res) => {
       }
 
       for (const phone of listPhonePromotion) {
-        
+          
         const phoneModel = await db.phone.findByPk(phone.code);
         
         if(!phoneModel){

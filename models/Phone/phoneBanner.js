@@ -3,6 +3,10 @@ export default (sequelize, DataTypes) => {
     name: {
       type: DataTypes.STRING,
       allowNull: false,
+    },
+    isShow: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
     }
   }, {
     timestamps: false, 

@@ -72,6 +72,33 @@ db.phoneDetail = phoneDetail(sequelize, DataTypes)
   db.PhoneBanner.hasMany(db.phone)
   db.phone.belongsTo(db.PhoneBanner)
 
+// add phoneBanner
+// await db.PhoneBanner.create({
+//   name: "Nổi bật nhất",
+//   isShow: true
+// })
+// await db.PhoneBanner.create({
+//   name: "Sản phẩm mới",
+//   isShow: true
+// })
+// await db.PhoneBanner.create({
+//   name: "Giá sốc online",
+//   isShow: true
+// })
+// await db.PhoneBanner.create({
+//   name: "Trả góp 0%",
+//   isShow: true
+// })
+// await db.PhoneBanner.create({
+//   name: "Giảm giá lớn",
+//   isShow: true
+// })
+
+// await db.PhoneBanner.create({
+//   name: "	Giá tốt cho mọi nhà",
+//   isShow: true
+// })
+
 // Provider
 import PurchaseDetail from './Provide/PurchaseDetail.js';
 import PurchaseOrder from './Provide/PurchaseOrder.js';
@@ -84,45 +111,46 @@ db.Provider.hasOne(db.purchaseOrder, { foreignKey: 'providerId', allowNull: fals
 db.purchaseOrder.belongsTo(db.Provider)
 
 // add providers to database only doing in created DB 
-await db.Provider.create({
-  providerName: 'SamSung Cần Thơ',
-  providerLocation: 'Số 123, Lý Tự Trọng, Xuân Khánh, Ninh Kiều, Cần Thơ'
-})
+// await db.Provider.create({
+//   providerName: 'SamSung Cần Thơ',
+//   providerLocation: 'Số 123, Lý Tự Trọng, Xuân Khánh, Ninh Kiều, Cần Thơ'
+// })
 
-await db.Provider.create({
-  providerName: 'Iphone Cần Thơ',
-  providerLocation: 'Số 125, Lý Tự Ái, Xuân Khánh, Ninh Kiều, Cần Thơ'
-})
+// await db.Provider.create({
+//   providerName: 'Iphone Cần Thơ',
+//   providerLocation: 'Số 125, Lý Tự Ái, Xuân Khánh, Ninh Kiều, Cần Thơ'
+// })
 
-await db.Provider.create({
-  providerName: 'Realme HCM',
-  providerLocation: '324/26 Hoàng Văn Thụ, Phường 4, Quận Tân Bình, TP HCM'
-})
+// await db.Provider.create({
+//   providerName: 'Realme HCM',
+//   providerLocation: '324/26 Hoàng Văn Thụ, Phường 4, Quận Tân Bình, TP HCM'
+// })
 
-await db.Provider.create({
-  providerName: 'Xixaomi HCM',
-  providerLocation: 'Số 6 Tân Thới Nhất 8, Phường Tân Thới Nhất, Quận 12, Tp. Hồ Chí Minh'
-})
+// await db.Provider.create({
+//   providerName: 'Xixaomi HCM',
+//   providerLocation: 'Số 6 Tân Thới Nhất 8, Phường Tân Thới Nhất, Quận 12, Tp. Hồ Chí Minh'
+// })
 
-await db.Provider.create({
-  providerName: 'Vivo HCM',
-  providerLocation: '401 lạc long quân phường 5 quận 11 Tp.Hồ Chí Minh'
-})
+// await db.Provider.create({
+//   providerName: 'Vivo HCM',
+//   providerLocation: '401 lạc long quân phường 5 quận 11 Tp.Hồ Chí Minh'
+// })
 
-await db.Provider.create({
-  providerName: 'Huawei HCM',
-  providerLocation: '194 Ba Tháng Hai, Phường 12, Quận 10, TP HCM'
-})
+// await db.Provider.create({
+//   providerName: 'Huawei HCM',
+//   providerLocation: '194 Ba Tháng Hai, Phường 12, Quận 10, TP HCM'
+// })
 
-await db.Provider.create({
-  providerName: 'Oppo HCM',
-  providerLocation: 'Lầu 1, Tòa nhà Tản Đà Court, 86 Tản Đà, P.11, Quận 5, Tp.HCM'
-})
+// await db.Provider.create({
+//   providerName: 'Oppo HCM',
+//   providerLocation: 'Lầu 1, Tòa nhà Tản Đà Court, 86 Tản Đà, P.11, Quận 5, Tp.HCM'
+// })
 
-await db.Provider.create({
-  providerName: 'Nokia HCM',
-  providerLocation: '31 Phan Bội Châu, Phường 14 , Quận Bình Thạnh . TP HCM'
-})
+// await db.Provider.create({
+//   providerName: 'Nokia HCM',
+//   providerLocation: '31 Phan Bội Châu, Phường 14 , Quận Bình Thạnh . TP HCM'
+// })
+
 
 // --------- define relationship ------
 

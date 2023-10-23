@@ -7,7 +7,7 @@ import { newAddress, updateAddress, removeAddress } from '../controllers/address
 // cart controller
 import { getCart, addItemToCart, updateItemToCart, removeItemToCart } from '../controllers/cartController.js'
 
-import { getOrderUser, getAllOrderUser, createOrder,  getAllOrderAdmin, handleOrderAdmin, handleOrderUser, deleteOrder} from '../controllers/orderController.js';
+import { getOrderUser, getAllOrderUser, createOrder,  getAllOrderAdminToAccept, getAllOrderAdmin, handleOrderAdmin, handleOrderUser, deleteOrder} from '../controllers/orderController.js';
 
 import discount  from '../controllers/discountController.js';
 
@@ -27,7 +27,7 @@ router.delete('/address', auth, removeAddress);
 router.get('/order', auth, getAllOrderUser);
 router.get('/order/:id', auth, getOrderUser);
 router.post('/order', auth, createOrder);
-router.post('/getOrder', auth, handleOrderUser);
+router.post('/handleOrder', auth, handleOrderUser);
 router.delete('/order/:id', auth, deleteOrder);
 
 // cart of user
@@ -40,7 +40,10 @@ router.delete('/cart', auth, removeItemToCart);
 // router.post('/', auth, createUser)
 router.get('/getAll', auth, getAllUser);
 router.delete('/', auth, deleteUser);
-router.get('/admin/order', auth, getAllOrderAdmin);
+
+// get order to accept -> order of admin
+router.get('/admin/order', auth, getAllOrderAdminToAccept);
+router.get('/admin/order/manage', auth, getAllOrderAdmin);
 router.post('/admin/order', auth, handleOrderAdmin);
 
 export default router;

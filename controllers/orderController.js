@@ -184,13 +184,84 @@ export const createOrder = async (req, res) => {
     console.log(error);
   }
 }
-
-export const getAllOrderAdmin = async (req, res) => {
+// controller
+export const getAllOrderAdminToAccept = async (req, res) => {
   try {
     let orders = await db.order.findAll({
       where: {
         stateId: 1
       },
+      include: [
+        { model: db.state },
+        { model: db.payment },
+        { 
+          model: db.user,
+          attributes: {
+            exclude: ['password', 'role', 'gender', 'token', 'createdAt', 'updatedAt'] // Add any fields you want to exclude here
+          },
+        },
+      ],
+      attributes: {
+        exclude: ['updatedAt', 'stateId', 'paymentId', 'userId'] // Add any fields you want to exclude here
+      }
+    });
+
+    let orderDetail = [];
+    // loop to get all orderDetail
+    for (const order of orders) {
+      // get all phone in order
+      let getOrderDetail = await db.orderDetail.findAll({
+        where: {
+          orderId: order.id
+        },
+        attributes: {
+          exclude: ['updatedAt', 'orderId'] // Add any fields you want to exclude here
+        }
+      });
+      
+      let formattedPhoneDetail;
+      let arrPhoneDetail =[];
+      // get information about phone of order
+      for (const phone of getOrderDetail) {
+        const phoneDetail = await db.phone.findOne({
+          where: {
+            id: phone.phoneId,
+          },
+          attributes: {
+            exclude: ['updatedAt', 'detail', 'categoryId', 'discountId', 'phoneBannerId', 'brandId'] // Add any fields you want to exclude here
+          }
+        });
+        formattedPhoneDetail = {
+          ... phone.toJSON(),
+          phoneDetail
+        }
+        arrPhoneDetail.push(formattedPhoneDetail)
+      }
+
+      if (getOrderDetail.length > 0) {
+        const formattedOrder = {
+          ...order.toJSON(),
+          arrPhoneDetail,
+          createdAt: new Date(order.createdAt).toLocaleString('en-US', { dateStyle: 'short', timeStyle: 'short' })
+        };
+        orderDetail.push(formattedOrder);
+      }
+    }
+
+    if (orderDetail.length <= 0) {
+      return res.status(400).json({ message: "Chưa có đơn hàng nào!" });
+    }
+
+    return res.status(200).json(orderDetail);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+}
+// controller loop-up-order
+export const getAllOrderAdmin = async (req, res) => {
+  try {
+    let orders = await db.order.findAll({
       include: [
         { model: db.state },
         { model: db.payment },
@@ -264,6 +335,7 @@ export const handleOrderAdmin = async (req, res) => {
     const userId = req.user.data.userId;
     const user = await db.user.findByPk(userId);
     const {orderId, stateId} = req.body;
+
     if(!user.role) {
       return res.status(400).json({message : `Người dùng ${user.firstName} ${user.lastName} không thể thực hiện chức năng này!!`})
     }
@@ -281,7 +353,7 @@ export const handleOrderAdmin = async (req, res) => {
           orderId: orderId
         }
       })
-
+      
       for(let phone of orderDetail) {
         const phoneDetail = await db.phoneDetail.findOne({
           where: {
@@ -292,11 +364,13 @@ export const handleOrderAdmin = async (req, res) => {
         })
         // return quantity phone when it not create order
         phoneDetail.quantity = phoneDetail.quantity + phone.quantity
-        phoneDetail.save();
+        await phoneDetail.save();
       }
 
-      return res.status(200).json(orderDetail)
+      order.stateId = stateId;
+      await order.save();
 
+      return res.status(200).json({message: "Cập nhật đơn hàng thành công"})
     }else {
       order.stateId = stateId;
       await order.save();
@@ -313,7 +387,7 @@ export const handleOrderAdmin = async (req, res) => {
 export const handleOrderUser= async (req, res) => {
   try {
     const userId = req.user.data.userId;
-    const {orderId} = req.body;
+    const {orderId, stateId} = req.body;
     
     const order = await db.order.findByPk(orderId)
 
@@ -321,14 +395,18 @@ export const handleOrderUser= async (req, res) => {
       return res.status(400).json({message : "có lỗi xảy ra!!"})
     }
 
+    if(userId !== order.userId) {
+      return res.status(400).json({message : "Bạn không phải chủ đơn hàng này!!"})
+    }
+
     if(order.stateId < 2) {
       return res.status(400).json({message : "Đơn hàng chưa được giao bạn không thể xác nhận được"})
     }
     
-    order.stateId = 3;
+    order.stateId = stateId;
     await order.save();
 
-    return res.status(200).json(order);
+    return res.status(200).json({message: "Cập nhật đơn hàng thành công"});
   } catch (error) {
     console.log(error);
   }
