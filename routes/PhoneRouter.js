@@ -4,7 +4,7 @@ import discountController from '../controllers/discountController.js';
 import auth from '../middleware/auth.js'
 
 import { addComment, updateComment, deleteComment } from '../controllers/commentController.js';
-import { getAllBanner, removePhonesToBanner, handleBanner, getPhonesBanner, getPhoneInfoBanner,addPhonesToBanner } from '../controllers/phoneBannerController.js';
+import { getAllBanner, removePhonesToBanner, handleBanner, getPhonesBanner, getPhoneInfoBanner,addPhonesToBanner, handleShowBanner } from '../controllers/phoneBannerController.js';
 
 
 const router = express.Router();
@@ -19,6 +19,7 @@ router.get('/banner',  getAllBanner);
 router.get('/banner/phones', auth, getPhonesBanner);
 router.get('/banner/phoneInfo/:id', auth, getPhoneInfoBanner);
 router.post('/banner', auth, handleBanner);
+router.post('/banner/handleShow', auth, handleShowBanner);
 router.post('/banner/add', auth, addPhonesToBanner);
 router.delete('/banner', auth, removePhonesToBanner);
 

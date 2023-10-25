@@ -246,8 +246,6 @@ db.rate.belongsTo(db.phone)
 //  await db.state.create({ nameState: "Đơn hàng bị từ chối" })
 // }
 
-
-
 // const directPayment = await db.payment.findOne({
 //   where:{
 //     namePayment: "Thanh toán trực tiếp"

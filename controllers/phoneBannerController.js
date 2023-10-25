@@ -109,6 +109,24 @@ export const handleBanner = async (req, res) => {
     console.log(error)
   }
 }
+
+export const handleShowBanner = async (req, res) => {
+  try {
+    const {bannerId, show} = req.body;
+    const user = await db.user.findByPk(req.user.data.userId);
+    if(!user.role) {
+      return res.status(400).json({message: "Người dugnf không thể thực hiện chức năng này"})
+    }
+    const banner = await db.PhoneBanner.findByPk(bannerId)
+
+    banner.isShow = show
+    await banner.save();
+
+    return res.status(200).json({message : "xử lý khung sản phẩm thành công"})
+  } catch (error) {
+    console.log(error)
+  }
+}
 export const getPhonesBanner = async (req, res) => {
   try {
     const user = await db.user.findByPk(req.user.data.userId);

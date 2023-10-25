@@ -161,7 +161,7 @@ const getAllPhone = async (req, res) => {
       phones = await db.phone.findAll({
         where: {
           price: {
-            [Op.lt]: Number(priceMin) || 3000000,
+            [Op.lt]: 3000000,
           }
         },
         include: [
