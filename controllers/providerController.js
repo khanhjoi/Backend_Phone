@@ -5,6 +5,9 @@ const createOrder = async (req, res) => {
     const { providerName, providerLocation, purchaseName, totalPrice, phone, mainImage } = req.body.provider;
     const detail  = req.body.detail;
     const user = await db.user.findOne({ where : {email: req.user.data.email}});
+    const provider = await db.Provider.findOne({
+      providerName: providerName
+    })
     if(!user) {
       return res.status(403).json({ message: "Người dùng không tồn tại"});
     }
@@ -21,7 +24,8 @@ const createOrder = async (req, res) => {
     const purchaseOrder = await db.purchaseOrder.create({
       purchaseName,
       providerLocation,
-      providerName,
+      providerName: provider.providerName,
+      providerId: provider.id,
       totalPrice: totalPrice,
     });
     // Loop through the phoneList array
@@ -144,4 +148,28 @@ const getProviders = async (req, res) => {
   }
 }
 
-export default { createOrder, getProviders };
+const getPurchaseOrder = async (req, res) => {
+  try {
+    const purchaseOrders = await db.purchaseOrder.findAll({
+
+    });
+
+    if(!purchaseOrders) {
+      return res.status(400).json({message: "Có lỗi xảy rồi !!"})
+    }
+
+    return res.status(200).json(purchaseOrders)
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+const getPurchaseDetail = async (req, res) => {
+  try {
+    
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+export default { createOrder, getProviders, getPurchaseOrder};

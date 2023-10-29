@@ -9,7 +9,7 @@ import { getCart, addItemToCart, updateItemToCart, removeItemToCart } from '../c
 
 import { getOrderUser, getAllOrderUser, createOrder,  getAllOrderAdminToAccept, getAllOrderAdmin, handleOrderAdmin, handleOrderUser, deleteOrder} from '../controllers/orderController.js';
 
-import discount  from '../controllers/discountController.js';
+import { getNumberPhones, getNumberOrder , getNumberOrderAccept, getNumberPhoneAlarm, getInComeRevenue} from '../controllers/statisticController.js';
 
 const router = express.Router();
 // normal user
@@ -41,9 +41,17 @@ router.delete('/cart', auth, removeItemToCart);
 router.get('/getAll', auth, getAllUser);
 router.delete('/', auth, deleteUser);
 
+router.get('/statistic/numberPhone', auth ,getNumberPhones)
+router.get('/statistic/numberPhoneAlarm', auth, getNumberPhoneAlarm)
+router.get('/statistic/numberOrder',auth, getNumberOrder)
+router.get('/statistic/numberOrderAccept', auth, getNumberOrderAccept)
+router.post('/statistic/income', auth, getInComeRevenue)
+
 // get order to accept -> order of admin
 router.get('/admin/order', auth, getAllOrderAdminToAccept);
 router.get('/admin/order/manage', auth, getAllOrderAdmin);
 router.post('/admin/order', auth, handleOrderAdmin);
+
+router.get('/admin/purchaseOrder', auth)
 
 export default router;

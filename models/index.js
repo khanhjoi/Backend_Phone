@@ -110,6 +110,10 @@ db.Provider = Provider(sequelize, DataTypes);
 db.Provider.hasOne(db.purchaseOrder, { foreignKey: 'providerId', allowNull: false })
 db.purchaseOrder.belongsTo(db.Provider)
 
+db.purchaseOrder.hasOne(db.PurchaseDetail, { foreignKey: 'purchaseOrderId', allowNull: false })
+db.PurchaseDetail.belongsTo(db.purchaseOrder)
+
+
 // add providers to database only doing in created DB 
 // await db.Provider.create({
 //   providerName: 'SamSung Cần Thơ',

@@ -306,57 +306,178 @@ const getPhone = async (req, res) => {
     console.log(error)
   }
 }
+
 const getAllPhoneAdmin = async (req, res) => {
   try {
-    const phones = await db.phone.findAll({
-      include: [
-        {
-          model: db.discount,
-        }
-      ],
-      attributes: {
-        exclude: ['phoneBannerId','categoryId ', 'discountId', 'brandId'] // Add any fields you want to exclude here
-      }
-    });
+    const phoneAlarm = req.query.phoneAlarm;
 
-    if(phones === null) {
-      return res.status(400).json({ message: "Không thể tìm điện thoại"});
-    }
-
-    let phoneWithOption = [];
-
-    for(const phone of phones) {
-      let formatOption = {}
-      const option = await db.phoneDetail.findAll({
-        where: {
-          phoneId: phone.id
-        },
-        include:[
+    if(phoneAlarm !== "true") {
+      // get All phone 
+      const phones = await db.phone.findAndCountAll({
+        include: [
           {
-            model: db.color,
-          }, {
-            model: db.capacity
+            model: db.discount,
           }
         ],
         attributes: {
-          exclude: ['colorId', 'capacityId'] // Add any fields you want to exclude here
-        }, 
-      })
-      
-      formatOption = {... 
-        phone.toJSON(),
-        option
+          exclude: ['phoneBannerId','categoryId ', 'discountId', 'brandId'] // Add any fields you want to exclude here
+        }
+      });
+  
+  
+      if(phones === null) {
+        return res.status(400).json({ message: "Không thể tìm điện thoại"});
       }
-      phoneWithOption.push(formatOption)
+      let phoneNumber = phones.count;
+      let phoneWithOption = [];
+      
+      for(const phone of phones.rows) {
+        let formatOption = {}
+        const option = await db.phoneDetail.findAll({
+          where: {
+            phoneId: phone.id
+          },
+          include:[
+            {
+              model: db.color,
+            }, {
+              model: db.capacity
+            }
+          ],
+          attributes: {
+            exclude: ['colorId', 'capacityId'] // Add any fields you want to exclude here
+          }, 
+        })
+        
+        formatOption = {... 
+          phone.toJSON(),
+          option
+        }
+        phoneWithOption.push(formatOption)
+      }
+      return res.status(200).json({ phoneNumber, phoneWithOption});
+    }else {
+      // if check phone less than 5
+      const phones = await db.phone.findAndCountAll({
+        include:[
+          {
+            model: db.phoneDetail,
+            where: {
+              quantity: {
+                [Op.lte]: 5
+              }
+            }
+          }
+        ]
+      });
+
+      if(phones === null) {
+        return res.status(400).json({ message: "Không thể tìm điện thoại"});
+      }
+      let phoneNumber = phones.count;
+      let phoneWithOption = [];
+  
+      for(const phone of phones.rows) {
+        let formatOption = {}
+        const option = await db.phoneDetail.findAll({
+          where: {
+            phoneId: phone.id
+          },
+          include:[
+            {
+              model: db.color,
+            }, {
+              model: db.capacity
+            }
+          ],
+          attributes: {
+            exclude: ['colorId', 'capacityId'] // Add any fields you want to exclude here
+          }, 
+        })
+        
+        formatOption = {... 
+          phone.toJSON(),
+          option
+        }
+        phoneWithOption.push(formatOption)
+      }
+      return res.status(200).json({ phoneNumber, phoneWithOption});
     }
-
-
-    return res.status(200).json(phoneWithOption);
   } catch (error) {
     console.log(error)
   }
 }
 
+const updatePhone = async (req, res) => {
+  try {
+    const {phone} = req.body;
 
+    const user = await db.user.findByPk(req.user.data.userId);
 
-export default { createPhone, getAllPhone, getPhone, getAllPhoneAdmin};
+    if(!user.role) {
+      return res.status(400).json({message: "Người dùng không thể thực hiện chức năng này !!"})
+    }
+
+    const phoneModel = await db.phone.findByPk(phone.id);
+
+    if(!phoneModel) {
+      return res.status(400).json({message: "Có lỗi rồi !!"})
+    }
+
+    //  update phone 
+    phoneModel.mainImage = phone.mainImage;
+    phoneModel.price = phone.price;
+
+    // update option phone
+
+    for (let option of phone.option) {
+      let optionMd = await db.phoneDetail.findOne({
+        where : {
+          phoneId: phone.id,
+          colorId: option.color.id,
+          capacityId: option.capacity.id,
+        }
+      })
+     
+      if(!optionMd) {
+        return res.status(400).json({message: "Có lỗi rồi !!"})
+      }
+
+      // update option
+      optionMd.quantity = option.quantity;
+      await optionMd.save();
+    }
+    
+    await phoneModel.save();
+
+    return res.status(200).json({message: "Cập nhật điện thoại thành công"})
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+const deletePhone = async (req, res) => {
+  try {
+    const {phone} = req.body;
+
+    const user = await db.user.findByPk(req.user.data.userId);
+
+    if(!user.role) {
+      return res.status(400).json({message: "Người dùng không thể thực hiện chức năng này !!"})
+    }
+
+    const phoneModel = await db.phone.findByPk(phone.id)
+
+    if(!phoneModel) {
+      return res.status(400).json({message: "Có lỗi xảy ra!!"})
+    }
+
+    await phoneModel.destroy(); 
+
+    return res.status(200).json({message: "xóa sản phẩm thành công"})
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+export default { createPhone, getAllPhone, getPhone, getAllPhoneAdmin, updatePhone, deletePhone};

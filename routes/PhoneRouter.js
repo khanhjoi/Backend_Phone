@@ -32,6 +32,8 @@ router.post('/discount', auth ,discountController.addDiscount);
 
 // phone router
 router.get('/admin', auth ,phoneController.getAllPhoneAdmin);
+router.put('/admin', auth ,phoneController.updatePhone);
+router.delete('/admin', auth ,phoneController.deletePhone);
 router.get('/', phoneController.getAllPhone);
 router.get('/:id', phoneController.getPhone);
 router.put('/:id', phoneController.getPhone);
