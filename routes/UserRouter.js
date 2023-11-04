@@ -37,7 +37,7 @@ router.put('/cart', auth, updateItemToCart);
 router.delete('/cart', auth, removeItemToCart);
 
 // admin
-// router.post('/', auth, createUser)
+// router.post('/', auth, createUser);
 router.get('/getAll', auth, getAllUser);
 router.delete('/', auth, deleteUser);
 
@@ -52,6 +52,5 @@ router.get('/admin/order', auth, getAllOrderAdminToAccept);
 router.get('/admin/order/manage', auth, getAllOrderAdmin);
 router.post('/admin/order', auth, handleOrderAdmin);
 
-router.get('/admin/purchaseOrder', auth)
 
 export default router;

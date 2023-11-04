@@ -4,8 +4,17 @@ import jwt from 'jsonwebtoken';
 
 export const register = async (req, res) => {
   try {
-    const { firstName, lastName, email, phone, password, gender ,role } = req.body;
+    let { firstName, lastName, email, phone, password, gender ,role } = req.body ;
     // check input
+    if(req.body.user) {
+      console.log(req.body.user)
+      firstName = req.body.user.firstName
+      lastName = req.body.user.lastName
+      email = req.body.user.email
+      password = req.body.user.password
+      phone = Number(req.body.user.phoneNumber)
+      gender = req.body.user.gender
+    }
     if(!(firstName && lastName && email, phone, password)) {
       return res.status(400).json({ message: "Vui lòng nhập đủ dữ liệu!!!"})
     }
@@ -44,7 +53,7 @@ export const register = async (req, res) => {
     user.token = token,
     await user.save();
 
-    return res.status(200).json(user);
+    return res.status(200).json({message: "Đăng ký thành công !!"});
   } catch (error) {
     return res.status(400).json(error)
   }
@@ -98,38 +107,51 @@ export const createUser = async (req, res) => {
 
 export const updateUser = async (req, res) => {
   try {
-    const { firstName, lastName, email, phone } = req.body;
+    console.log(req.body)
+    const {id, firstName, lastName, email, phone, password } = req.body.user;
     const userId = req.user.data.userId;
-
     const user = await db.user.findByPk(userId);
 
-    if(!user) {
-      return res.status(400).json({message : "Không thể tìm thấy người dùng này !!!"})
+    if(!user.role) {
+      return res.status(400).json({message : "Người dùng không thể thực hiện chức năng này !!!"})
+    }
+
+    // tìm người dùng trong data
+    const userEdit = await db.user.findByPk(id);
+
+    if(!userEdit) {
+      return res.status(400).json({message : "Không thể tìm được người dùng này !!!"})
     }
 
     if(firstName) {
-      user.firstName = firstName;
+      userEdit.firstName = firstName;
     }
 
     if(lastName) {
-      user.lastName = lastName;
+      userEdit.lastName = lastName;
     }
 
-    if (email && user.email !== email) {
+    if (email && userEdit.email !== email) {
       const oldUser = await db.user.findOne({ where: { email: email } });
     
       if (oldUser !== null) {
         return res.status(403).json({ message: "Email đã có người xử dụng !!" });
       }
     
-      user.email = email;
+      userEdit.email = email;
     }
 
     if(phone) {
-      user.phone = phone
+      userEdit.phone = phone
     }
 
-    await user.save();
+    if(password) {
+      var salt = bcrypt.genSaltSync(10);
+      var encryptedPassword = bcrypt.hashSync(password, salt);
+      userEdit.password = encryptedPassword
+    }
+
+    await userEdit.save();
 
     return res.status(200).json({success: "cập nhật thông tin thành công!!!"});
   } catch (error) {
@@ -139,13 +161,24 @@ export const updateUser = async (req, res) => {
 
 export const getAllUser = async (req, res) => {
   try {
-    const user = await db.user.findOne({ where : {email: req.user.email}});
+    const user = await db.user.findOne({ where : {email: req.user.data.email}});
 
     if(!user.role) {
       return res.status(403).json({ message: "Người dùng không thể thực hiện chức năng này"});
     }
 
-    const users = await db.user.findAll();
+    const users = await db.user.findAll({
+      include: [
+        {
+          model: db.address
+        }
+      ]
+    });
+
+    if(!users) {
+      return res.status(400).json({message : "Có lỗi xảy ra!!!"});
+
+    } 
 
     return res.status(200).json(users);
 
@@ -177,15 +210,14 @@ export const getUser = async (req, res) => {
 
 export const deleteUser = async (req, res) => {
   try {
-    const { userId } = req.body;
-
+    const  userId  = req.body.userId;
     const user = await db.user.findByPk(userId);
 
     if(!user) {
       return res.status(400).json({message : "Không thể tìm thấy người dùng này !!!"})
     }
 
-    const isOwner = await db.user.findOne({ where: { email: req.user.email }});
+    const isOwner = await db.user.findOne({ where: { email: req.user.data.email }});
 
     if(!isOwner.role) {
       return res.status(400).json({ message: "Người dùng không sử dụng được chức năng này!!!"});
@@ -193,7 +225,7 @@ export const deleteUser = async (req, res) => {
 
     await user.destroy();
 
-    return res.status(400).json({ message: "Xóa người dùng thành công!!!"}); 
+    return res.status(200).json({ message: "Xóa người dùng thành công!!!"}); 
   } catch (error) {
     return res.status(400).json(error)
   }
