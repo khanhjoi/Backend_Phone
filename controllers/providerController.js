@@ -2,12 +2,14 @@ import db from "../models/index.js";
 
 const createOrder = async (req, res) => {
   try {
+    
     const { providerName, providerLocation, purchaseName, totalPrice, phone, mainImage } = req.body.provider;
     const detail  = req.body.detail;
     const user = await db.user.findOne({ where : {email: req.user.data.email}});
     const provider = await db.Provider.findOne({
       providerName: providerName
     })
+
     if(!user) {
       return res.status(403).json({ message: "Người dùng không tồn tại"});
     }
@@ -29,10 +31,12 @@ const createOrder = async (req, res) => {
       totalPrice: totalPrice,
     });
     // Loop through the phoneList array
-    console.log(phone)
+
     const phoneExit = await db.phone.findOne({
       where: {name: phone.name}
     })
+    console.log("ok4");
+
 
     if(!phoneExit){
       console.log('check')
@@ -70,11 +74,12 @@ const createOrder = async (req, res) => {
           additionalPrice: opt.additionalPrice,
         })
 
-
+        console.log("ok5");
         const phoneDetail = await db.phoneDetail.create({
           phoneId: phoneCreate.id,
           colorId: colorPhone.id,
           capacityId: capacityPhone.id,
+          Image_Detail: opt.image,
           quantity: opt.quantity
         })
    

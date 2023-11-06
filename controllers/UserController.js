@@ -105,13 +105,11 @@ export const createUser = async (req, res) => {
   }
 }
 
-export const updateUser = async (req, res) => {
+export const updateUserAdmin = async (req, res) => {
   try {
-    console.log(req.body)
     const {id, firstName, lastName, email, phone, password } = req.body.user;
     const userId = req.user.data.userId;
     const user = await db.user.findByPk(userId);
-
     if(!user.role) {
       return res.status(400).json({message : "Người dùng không thể thực hiện chức năng này !!!"})
     }
@@ -154,6 +152,49 @@ export const updateUser = async (req, res) => {
     await userEdit.save();
 
     return res.status(200).json({success: "cập nhật thông tin thành công!!!"});
+  } catch (error) {
+    return res.status(400).json(error)
+  }
+}
+
+export const updateUser = async (req, res) => {
+  try {
+    const {firstName, lastName, email, phone } = req.body;
+    console.log('ok')
+    
+    const userId = req.user.data.userId;
+    const user = await db.user.findByPk(userId);
+
+    if(!user) {
+      return res.status(400).json({message : "Không thể tìm được người dùng này !!!"})
+    }
+
+    // tìm người dùng trong data
+    if(firstName) {
+      user.firstName = firstName;
+    }
+
+    if(lastName) {
+      user.lastName = lastName;
+    }
+
+    if (email && user.email !== email) {
+      const oldUser = await db.user.findOne({ where: { email: email } });
+    
+      if (oldUser !== null) {
+        return res.status(403).json({ message: "Email đã có người xử dụng !!" });
+      }
+    
+      user.email = email;
+    }
+
+    if(phone) {
+      user.phone = phone
+    }
+
+    await user.save();
+
+    return res.status(200).json({message: "cập nhật thông tin thành công!!!"});
   } catch (error) {
     return res.status(400).json(error)
   }

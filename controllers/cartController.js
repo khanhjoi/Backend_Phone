@@ -57,8 +57,8 @@ export const getCart = async (req, res) => {
 
 export const addItemToCart = async (req, res) => {
   try { 
-    const { phoneId, quantity, capacityId, colorId, colorName, capacityName } = req.body.option;
-
+    const { phoneId, quantity, capacityId, colorId, colorName, capacityName, image } = req.body.option;
+    console.log(image)
     const userId = req.user.data.userId; // Assuming you have the user ID from the request
     // Find the user with the specified ID and include the associated phones
 
@@ -104,7 +104,8 @@ export const addItemToCart = async (req, res) => {
           colorId,
           colorName,
           capacityName,
-          quantity
+          quantity,
+          image
         })
       }
 
@@ -122,7 +123,8 @@ export const addItemToCart = async (req, res) => {
         colorId,
         colorName,
         capacityName,
-        quantity
+        quantity,
+        image
       })
       return res.status(200).json({message: "thêm sản phẩm thành công"});
     }

@@ -27,6 +27,9 @@ export default (sequelize, DataTypes) => {
     quantity: {
       type: DataTypes.INTEGER,
       default: 0
+    },
+    image: {
+      type: DataTypes.STRING
     }
   }, {
     timestamps: false, 

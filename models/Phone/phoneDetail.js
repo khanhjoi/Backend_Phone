@@ -3,6 +3,9 @@ export default (sequelize, DataTypes) => {
     quantity: {
       type: DataTypes.INTEGER,
       allowNull: false,
+    },
+    Image_Detail: {
+      type: DataTypes.STRING,
     }
   }, {
     timestamps: false,

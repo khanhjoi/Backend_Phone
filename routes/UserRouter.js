@@ -1,7 +1,7 @@
 import express from 'express';
 import auth from '../middleware/auth.js';
 // user controller
-import { getUser, getAllUser, register, updateUser, login , createUser, deleteUser } from '../controllers/UserController.js';
+import { getUser, getAllUser, register, updateUser, login , createUser, deleteUser, updateUserAdmin } from '../controllers/UserController.js';
 // address controller
 import { newAddress, updateAddress, removeAddress } from '../controllers/addressController.js';
 // cart controller
@@ -15,6 +15,7 @@ const router = express.Router();
 // normal user
 router.post('/register', register);
 router.post('/login', login);
+router.patch('/admin', auth, updateUserAdmin);
 router.patch('/', auth, updateUser);
 router.get('/', auth, getUser);
 

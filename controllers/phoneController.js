@@ -58,7 +58,9 @@ const createPhone = async (req, res) => {
 };
 
 const getAllPhone = async (req, res) => {
-  const { brand, category, priceLow, priceUp, priceMin, priceMax, search} = req.query;
+  const { brand, category, priceLow, priceUp, priceMin, priceMax, search, page} = req.query;
+  let limit = 12;
+  let offset = 0 + (page - 1) * limit;
   let phones = null;
   // if search exit
   if(search) {
@@ -178,7 +180,6 @@ const getAllPhone = async (req, res) => {
           }
         ],
       });
-    
       } else if(priceLow && priceUp)  {
         phones = await db.phone.findAll({
           where: {
