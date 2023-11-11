@@ -271,3 +271,22 @@ export const deleteUser = async (req, res) => {
     return res.status(400).json(error)
   }
 }
+
+export const isAdmin = async (req, res) => {
+  try {
+    const userId = req.user.data.userId;
+    const user = await db.user.findByPk(userId);
+
+    if(!user) {
+      return res.status(400).json({message : "Không thể tìm thấy người dùng này !!!"})
+    }
+
+    if(!user.role) {
+      return res.status(400).json({ message: "Người dùng không sử dụng được chức năng này!!!", role: false});
+    }
+
+    return res.status(200).json({ message: "NGười dùng là admin", role: true}); 
+  } catch (error) {
+    return res.status(400).json(error)
+  }
+}

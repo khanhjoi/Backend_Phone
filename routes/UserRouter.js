@@ -1,7 +1,7 @@
 import express from 'express';
 import auth from '../middleware/auth.js';
 // user controller
-import { getUser, getAllUser, register, updateUser, login , createUser, deleteUser, updateUserAdmin } from '../controllers/UserController.js';
+import { getUser, getAllUser, register, updateUser, login , createUser, deleteUser, updateUserAdmin, isAdmin} from '../controllers/UserController.js';
 // address controller
 import { newAddress, updateAddress, removeAddress } from '../controllers/addressController.js';
 // cart controller
@@ -12,10 +12,12 @@ import { getOrderUser, getAllOrderUser, createOrder,  getAllOrderAdminToAccept, 
 import { getNumberPhones, getNumberOrder , getNumberOrderAccept, getNumberPhoneAlarm, getInComeRevenue} from '../controllers/statisticController.js';
 
 const router = express.Router();
+
 // normal user
 router.post('/register', register);
 router.post('/login', login);
 router.patch('/admin', auth, updateUserAdmin);
+router.get('/admin', auth, isAdmin)
 router.patch('/', auth, updateUser);
 router.get('/', auth, getUser);
 

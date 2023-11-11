@@ -59,8 +59,7 @@ const createPhone = async (req, res) => {
 
 const getAllPhone = async (req, res) => {
   const { brand, category, priceLow, priceUp, priceMin, priceMax, search, page} = req.query;
-  let limit = 12;
-  let offset = 0 + (page - 1) * limit;
+  let limit =  12 * page || null;
   let phones = null;
   // if search exit
   if(search) {
@@ -155,7 +154,7 @@ const getAllPhone = async (req, res) => {
           {
             model : db.rate
           }
-        ],
+        ]
       });
     }
   } else {
@@ -238,6 +237,7 @@ const getAllPhone = async (req, res) => {
               model : db.rate
             }
           ],
+          limit: limit
         });
     }
   }
@@ -295,6 +295,9 @@ const getPhone = async (req, res) => {
           attributes: {
             exclude: ['updatedAt','userId', 'capacityId'] // Add any fields you want to exclude here
           }
+        },
+        {
+          model: db.discount
         }
       ]
     });
